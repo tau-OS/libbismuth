@@ -157,7 +157,6 @@ libbismuth_sources = [
   libbismuth_public_sources,
   libbismuth_private_sources,
   libbismuth_resources,
-  libbismuth_stylesheet_resources,
   libbismuth_init_public_types,
 ]
 
@@ -189,24 +188,6 @@ config_h.set_quoted('GETTEXT_PACKAGE', 'libbismuth')
 config_h.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
 
 # Symbol visibility
-if target_system == 'windows'
-  config_h.set('DLL_EXPORT', true)
-  config_h.set('_BIS_EXTERN', '__declspec(dllexport) extern')
-else
-  config_h.set('_BIS_EXTERN', '__attribute__((visibility("default"))) extern')
-endif
-
-if target_system == 'darwin'
-  appleframework_modules = [
-    'AppKit',
-    'Foundation',
-  ]
-  libbismuth_deps += [
-    dependency('appleframeworks', modules: appleframework_modules),
-  ]
-  libbismuth_c_args += ['-xobjective-c']
-endif
-
 configure_file(
          output: 'config.h',
   configuration: config_h,
@@ -222,12 +203,7 @@ if cc.links('int main() { return 0; }', args : ld_version_script_arg, name : 'ld
   libbismuth_link_args += [ld_version_script_arg]
 endif
 
-# set default libdir on win32 for libbismuth target to keep MinGW compatibility
-if target_system == 'windows'
-  bismuth_libdir = [true]
-else
-  bismuth_libdir = libdir
-endif
+bismuth_libdir = libdir
 
 libbismuth = library(
   'bismuth-' + apiversion,
@@ -253,7 +229,6 @@ libbismuth_dep = declare_dependency(
 meson.override_dependency(package_api_name, libbismuth_dep)
 
 if introspection
-
    libbismuth_gir_extra_args = [
      '--c-include=bismuth.h',
      '--quiet',
@@ -276,7 +251,6 @@ if introspection
    )
 
    if get_option('vapi')
-
      libbismuth_vapi = gnome.generate_vapi(package_api_name,
              sources: libbismuth_gir[0],
             packages: [ 'gio-2.0', 'gtk4' ],
@@ -284,7 +258,6 @@ if introspection
          install_dir: vapidir,
        metadata_dirs: [ meson.current_source_dir() ],
      )
-
    endif
 endif
 
