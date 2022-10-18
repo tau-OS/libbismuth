@@ -141,7 +141,6 @@ libbismuth_private_sources += files([
   'bis-bidi.c',
   'bis-tool.c',
   'bis-gtkbuilder-utils.c',
-  'bis-indicator-bin.c',
   'bis-settings.c',
   'bis-shadow-helper.c',
   'bis-widget-utils.c',
