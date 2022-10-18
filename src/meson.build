@@ -188,6 +188,8 @@ config_h.set_quoted('GETTEXT_PACKAGE', 'libbismuth')
 config_h.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
 
 # Symbol visibility
+config_h.set('_BIS_EXTERN', '__attribute__((visibility("default"))) extern')
+
 configure_file(
          output: 'config.h',
   configuration: config_h,
@@ -231,6 +233,7 @@ meson.override_dependency(package_api_name, libbismuth_dep)
 if introspection
    libbismuth_gir_extra_args = [
      '--c-include=bismuth.h',
+     '--quiet',
      '-DBISMUTH_COMPILATION',
    ]
 
@@ -268,7 +271,7 @@ pkgg.generate(
       version: meson.project_version(),
          name: 'Bismuth',
      filebase: package_api_name,
-  description: 'The best responsive widgets ever',
+  description: 'Bismuth responsive widgets',
      requires: 'gtk4',
   install_dir: libdir / 'pkgconfig',
 )
