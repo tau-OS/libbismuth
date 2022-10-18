@@ -7,8 +7,6 @@
 
 #include "bis-main-private.h"
 
-#include "bis-inspector-page-private.h"
-#include "bis-style-manager-private.h"
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
@@ -42,18 +40,6 @@ bis_init (void)
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
   bis_init_public_types ();
-
-  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_for_display (gdk_display_get_default ()),
-                                    "/org/gnome/Bismuth/icons");
-
-  bis_style_manager_ensure ();
-
-  if (g_io_extension_point_lookup ("gtk-inspector-page"))
-    g_io_extension_point_implement ("gtk-inspector-page",
-                                    BIS_TYPE_INSPECTOR_PAGE,
-                                    "libbismuth",
-                                    10);
-
   bis_initialized = TRUE;
 }
 
