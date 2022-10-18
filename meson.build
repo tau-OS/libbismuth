@@ -106,21 +106,11 @@ add_project_arguments(
   language: 'c'
 )
 
-# Setup various paths that subdirectory meson.build files need
-package_subdir = get_option('package_subdir') # When used as subproject
-if package_subdir != ''
-  datadir    = get_option('datadir') / package_subdir
-  libdir     = get_option('libdir')  / package_subdir
-  girdir     = get_option('datadir') / package_subdir / 'gir-1.0'
-  typelibdir = get_option('libdir')  / package_subdir / 'girepository-1.0'
-  vapidir    = get_option('datadir') / package_subdir / 'vapi'
-else
-  datadir    = get_option('datadir')
-  libdir     = get_option('libdir')
-  girdir     = get_option('datadir') / 'gir-1.0'
-  typelibdir = get_option('libdir')  / 'girepository-1.0'
-  vapidir    = get_option('datadir') / 'vala' / 'vapi'
-endif
+datadir    = get_option('datadir')
+libdir     = get_option('libdir')
+girdir     = get_option('datadir') / 'gir-1.0'
+typelibdir = get_option('libdir')  / 'girepository-1.0'
+vapidir    = get_option('datadir') / 'vala' / 'vapi'
 
 introspection_feature = get_option('introspection')
 introspection = introspection_feature.enabled() or introspection_feature.auto()
