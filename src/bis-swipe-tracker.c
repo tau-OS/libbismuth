@@ -39,7 +39,7 @@
 /**
  * BisSwipeTracker:
  *
- * A swipe tracker used in [class@Carousel], [class@Flap] and [class@Leaflet].
+ * A swipe tracker used in [class@Carousel], [class@Lapel] and [class@Album].
  *
  * The `BisSwipeTracker` object can be used for implementing widgets with swipe
  * gestures. It supports touch-based swipes, pointer dragging, and touchpad

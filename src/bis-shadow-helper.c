@@ -6,7 +6,7 @@
 
 #include "config.h"
 
-#include "bis-gizmo-private.h"
+#include "bis-tool-private.h"
 #include "bis-macros-private.h"
 #include "bis-shadow-helper-private.h"
 
@@ -37,13 +37,13 @@ bis_shadow_helper_constructed (GObject *object)
 {
   BisShadowHelper *self = BIS_SHADOW_HELPER (object);
 
-  self->dimming = bis_gizmo_new_with_role ("dimming", GTK_ACCESSIBLE_ROLE_PRESENTATION,
+  self->dimming = bis_tool_new_with_role ("dimming", GTK_ACCESSIBLE_ROLE_PRESENTATION,
                                            NULL, NULL, NULL, NULL, NULL, NULL);
-  self->shadow = bis_gizmo_new_with_role ("shadow", GTK_ACCESSIBLE_ROLE_PRESENTATION,
+  self->shadow = bis_tool_new_with_role ("shadow", GTK_ACCESSIBLE_ROLE_PRESENTATION,
                                           NULL, NULL, NULL, NULL, NULL, NULL);
-  self->border = bis_gizmo_new_with_role ("border", GTK_ACCESSIBLE_ROLE_PRESENTATION,
+  self->border = bis_tool_new_with_role ("border", GTK_ACCESSIBLE_ROLE_PRESENTATION,
                                           NULL, NULL, NULL, NULL, NULL, NULL);
-  self->outline = bis_gizmo_new_with_role ("outline", GTK_ACCESSIBLE_ROLE_PRESENTATION,
+  self->outline = bis_tool_new_with_role ("outline", GTK_ACCESSIBLE_ROLE_PRESENTATION,
                                            NULL, NULL, NULL, NULL, NULL, NULL);
 
   gtk_widget_set_child_visible (self->dimming, FALSE);

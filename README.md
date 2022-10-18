@@ -1,6 +1,6 @@
 # Bismuth
 
-Building blocks for responsiveness in GTK4.
+Based on libadwaita responsive widgets, without all the baggage.
 
 ## License
 

@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#include "bis-squeezer.h"
+#include "bis-hugger.h"
 
 #include "bis-animation-util.h"
 #include "bis-easing.h"
@@ -25,51 +25,51 @@
 #include "bis-widget-utils-private.h"
 
 /**
- * BisSqueezer:
+ * BisHugger:
  *
  * A best fit container.
  *
  * <picture>
- *   <source srcset="squeezer-wide-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="squeezer-wide.png" alt="squeezer-wide">
+ *   <source srcset="hugger-wide-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="hugger-wide.png" alt="hugger-wide">
  * </picture>
  * <picture>
- *   <source srcset="squeezer-narrow-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="squeezer-narrow.png" alt="squeezer-narrow">
+ *   <source srcset="hugger-narrow-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="hugger-narrow.png" alt="hugger-narrow">
  * </picture>
  *
- * The `BisSqueezer` widget is a container which only shows the first of its
+ * The `BisHugger` widget is a container which only shows the first of its
  * children that fits in the available size. It is convenient to offer different
  * widgets to represent the same data with different levels of detail, making
  * the widget seem to squeeze itself to fit in the available space.
  *
  * Transitions between children can be animated as fades. This can be controlled
- * with [property@Squeezer:transition-type].
+ * with [property@Hugger:transition-type].
  *
  * ## CSS nodes
  *
- * `BisSqueezer` has a single CSS node with name `squeezer`.
+ * `BisHugger` has a single CSS node with name `hugger`.
  *
  * Since: 1.0
  */
 
 /**
- * BisSqueezerPage:
+ * BisHuggerPage:
  *
- * An auxiliary class used by [class@Squeezer].
+ * An auxiliary class used by [class@Hugger].
  */
 
 /**
- * BisSqueezerTransitionType:
- * @BIS_SQUEEZER_TRANSITION_TYPE_NONE: No transition
- * @BIS_SQUEEZER_TRANSITION_TYPE_CROSSFADE: A cross-fade
+ * BisHuggerTransitionType:
+ * @BIS_HUGGER_TRANSITION_TYPE_NONE: No transition
+ * @BIS_HUGGER_TRANSITION_TYPE_CROSSFADE: A cross-fade
  *
- * Describes the possible transitions in a [class@Squeezer] widget.
+ * Describes the possible transitions in a [class@Hugger] widget.
  *
  * Since: 1.0
  */
 
-struct _BisSqueezerPage {
+struct _BisHuggerPage {
   GObject parent_instance;
 
   GtkWidget *widget;
@@ -77,7 +77,7 @@ struct _BisSqueezerPage {
   gboolean enabled;
 };
 
-G_DEFINE_FINAL_TYPE (BisSqueezerPage, bis_squeezer_page, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (BisHuggerPage, bis_hugger_page, G_TYPE_OBJECT)
 
 enum {
   PAGE_PROP_0,
@@ -88,23 +88,23 @@ enum {
 
 static GParamSpec *page_props[LAST_PAGE_PROP];
 
-struct _BisSqueezer
+struct _BisHugger
 {
   GtkWidget parent_instance;
 
   GList *children;
 
-  BisSqueezerPage *visible_child;
+  BisHuggerPage *visible_child;
   BisFoldThresholdPolicy switch_threshold_policy;
 
   gboolean homogeneous;
 
   gboolean allow_none;
 
-  BisSqueezerTransitionType transition_type;
+  BisHuggerTransitionType transition_type;
   guint transition_duration;
 
-  BisSqueezerPage *last_visible_child;
+  BisHuggerPage *last_visible_child;
   gboolean transition_running;
   BisAnimation *animation;
 
@@ -143,28 +143,28 @@ enum  {
 
 static GParamSpec *props[LAST_PROP];
 
-static void bis_squeezer_buildable_init (GtkBuildableIface *iface);
+static void bis_hugger_buildable_init (GtkBuildableIface *iface);
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (BisSqueezer, bis_squeezer, GTK_TYPE_WIDGET,
+G_DEFINE_FINAL_TYPE_WITH_CODE (BisHugger, bis_hugger, GTK_TYPE_WIDGET,
                                G_IMPLEMENT_INTERFACE (GTK_TYPE_ORIENTABLE, NULL)
-                               G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, bis_squeezer_buildable_init))
+                               G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, bis_hugger_buildable_init))
 
 static GtkBuildableIface *parent_buildable_iface;
 
 static void
-bis_squeezer_page_get_property (GObject    *object,
+bis_hugger_page_get_property (GObject    *object,
                                 guint       property_id,
                                 GValue     *value,
                                 GParamSpec *pspec)
 {
-  BisSqueezerPage *self = BIS_SQUEEZER_PAGE (object);
+  BisHuggerPage *self = BIS_HUGGER_PAGE (object);
 
   switch (property_id) {
   case PAGE_PROP_CHILD:
-    g_value_set_object (value, bis_squeezer_page_get_child (self));
+    g_value_set_object (value, bis_hugger_page_get_child (self));
     break;
   case PAGE_PROP_ENABLED:
-    g_value_set_boolean (value, bis_squeezer_page_get_enabled (self));
+    g_value_set_boolean (value, bis_hugger_page_get_enabled (self));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -173,19 +173,19 @@ bis_squeezer_page_get_property (GObject    *object,
 }
 
 static void
-bis_squeezer_page_set_property (GObject      *object,
+bis_hugger_page_set_property (GObject      *object,
                                 guint         property_id,
                                 const GValue *value,
                                 GParamSpec   *pspec)
 {
-  BisSqueezerPage *self = BIS_SQUEEZER_PAGE (object);
+  BisHuggerPage *self = BIS_HUGGER_PAGE (object);
 
   switch (property_id) {
   case PAGE_PROP_CHILD:
     g_set_object (&self->widget, g_value_get_object (value));
     break;
   case PAGE_PROP_ENABLED:
-    bis_squeezer_page_set_enabled (self, g_value_get_boolean (value));
+    bis_hugger_page_set_enabled (self, g_value_get_boolean (value));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -194,9 +194,9 @@ bis_squeezer_page_set_property (GObject      *object,
 }
 
 static void
-bis_squeezer_page_finalize (GObject *object)
+bis_hugger_page_finalize (GObject *object)
 {
-  BisSqueezerPage *self = BIS_SQUEEZER_PAGE (object);
+  BisHuggerPage *self = BIS_HUGGER_PAGE (object);
 
   g_clear_object (&self->widget);
 
@@ -204,22 +204,22 @@ bis_squeezer_page_finalize (GObject *object)
     g_object_remove_weak_pointer (G_OBJECT (self->last_focus),
                                   (gpointer *) &self->last_focus);
 
-  G_OBJECT_CLASS (bis_squeezer_page_parent_class)->finalize (object);
+  G_OBJECT_CLASS (bis_hugger_page_parent_class)->finalize (object);
 }
 
 static void
-bis_squeezer_page_class_init (BisSqueezerPageClass *klass)
+bis_hugger_page_class_init (BisHuggerPageClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->get_property = bis_squeezer_page_get_property;
-  object_class->set_property = bis_squeezer_page_set_property;
-  object_class->finalize = bis_squeezer_page_finalize;
+  object_class->get_property = bis_hugger_page_get_property;
+  object_class->set_property = bis_hugger_page_set_property;
+  object_class->finalize = bis_hugger_page_finalize;
 
   /**
-   * BisSqueezerPage:child: (attributes org.gtk.Property.get=bis_squeezer_page_get_child)
+   * BisHuggerPage:child: (attributes org.gtk.Property.get=bis_hugger_page_get_child)
    *
-   * The the squeezer child to which the page belongs.
+   * The the hugger child to which the page belongs.
    *
    * Since: 1.0
    */
@@ -229,7 +229,7 @@ bis_squeezer_page_class_init (BisSqueezerPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisSqueezerPage:enabled: (attributes org.gtk.Property.get=bis_squeezer_page_get_enabled org.gtk.Property.set=bis_squeezer_page_set_enabled)
+   * BisHuggerPage:enabled: (attributes org.gtk.Property.get=bis_hugger_page_get_enabled org.gtk.Property.set=bis_hugger_page_set_enabled)
    *
    * Whether the child is enabled.
    *
@@ -253,43 +253,43 @@ bis_squeezer_page_class_init (BisSqueezerPageClass *klass)
 }
 
 static void
-bis_squeezer_page_init (BisSqueezerPage *self)
+bis_hugger_page_init (BisHuggerPage *self)
 {
   self->enabled = TRUE;
 }
 
-#define BIS_TYPE_SQUEEZER_PAGES (bis_squeezer_pages_get_type ())
+#define BIS_TYPE_HUGGER_PAGES (bis_hugger_pages_get_type ())
 
-G_DECLARE_FINAL_TYPE (BisSqueezerPages, bis_squeezer_pages, BIS, SQUEEZER_PAGES, GObject)
+G_DECLARE_FINAL_TYPE (BisHuggerPages, bis_hugger_pages, BIS, HUGGER_PAGES, GObject)
 
-struct _BisSqueezerPages
+struct _BisHuggerPages
 {
   GObject parent_instance;
-  BisSqueezer *squeezer;
+  BisHugger *hugger;
 };
 
 static GType
-bis_squeezer_pages_get_item_type (GListModel *model)
+bis_hugger_pages_get_item_type (GListModel *model)
 {
-  return BIS_TYPE_SQUEEZER_PAGE;
+  return BIS_TYPE_HUGGER_PAGE;
 }
 
 static guint
-bis_squeezer_pages_get_n_items (GListModel *model)
+bis_hugger_pages_get_n_items (GListModel *model)
 {
-  BisSqueezerPages *self = BIS_SQUEEZER_PAGES (model);
+  BisHuggerPages *self = BIS_HUGGER_PAGES (model);
 
-  return g_list_length (self->squeezer->children);
+  return g_list_length (self->hugger->children);
 }
 
 static gpointer
-bis_squeezer_pages_get_item (GListModel *model,
+bis_hugger_pages_get_item (GListModel *model,
                              guint       position)
 {
-  BisSqueezerPages *self = BIS_SQUEEZER_PAGES (model);
-  BisSqueezerPage *page;
+  BisHuggerPages *self = BIS_HUGGER_PAGES (model);
+  BisHuggerPage *page;
 
-  page = g_list_nth_data (self->squeezer->children, position);
+  page = g_list_nth_data (self->hugger->children, position);
 
   if (!page)
     return NULL;
@@ -298,64 +298,64 @@ bis_squeezer_pages_get_item (GListModel *model,
 }
 
 static void
-bis_squeezer_pages_list_model_init (GListModelInterface *iface)
+bis_hugger_pages_list_model_init (GListModelInterface *iface)
 {
-  iface->get_item_type = bis_squeezer_pages_get_item_type;
-  iface->get_n_items = bis_squeezer_pages_get_n_items;
-  iface->get_item = bis_squeezer_pages_get_item;
+  iface->get_item_type = bis_hugger_pages_get_item_type;
+  iface->get_n_items = bis_hugger_pages_get_n_items;
+  iface->get_item = bis_hugger_pages_get_item;
 }
 
 static gboolean
-bis_squeezer_pages_is_selected (GtkSelectionModel *model,
+bis_hugger_pages_is_selected (GtkSelectionModel *model,
                                 guint              position)
 {
-  BisSqueezerPages *self = BIS_SQUEEZER_PAGES (model);
-  BisSqueezerPage *page;
+  BisHuggerPages *self = BIS_HUGGER_PAGES (model);
+  BisHuggerPage *page;
 
-  page = g_list_nth_data (self->squeezer->children, position);
+  page = g_list_nth_data (self->hugger->children, position);
 
-  return page && page == self->squeezer->visible_child;
+  return page && page == self->hugger->visible_child;
 }
 
 static void
-bis_squeezer_pages_selection_model_init (GtkSelectionModelInterface *iface)
+bis_hugger_pages_selection_model_init (GtkSelectionModelInterface *iface)
 {
-  iface->is_selected = bis_squeezer_pages_is_selected;
+  iface->is_selected = bis_hugger_pages_is_selected;
 }
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (BisSqueezerPages, bis_squeezer_pages, G_TYPE_OBJECT,
-                               G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, bis_squeezer_pages_list_model_init)
-                               G_IMPLEMENT_INTERFACE (GTK_TYPE_SELECTION_MODEL, bis_squeezer_pages_selection_model_init))
+G_DEFINE_FINAL_TYPE_WITH_CODE (BisHuggerPages, bis_hugger_pages, G_TYPE_OBJECT,
+                               G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, bis_hugger_pages_list_model_init)
+                               G_IMPLEMENT_INTERFACE (GTK_TYPE_SELECTION_MODEL, bis_hugger_pages_selection_model_init))
 
 static void
-bis_squeezer_pages_init (BisSqueezerPages *pages)
+bis_hugger_pages_init (BisHuggerPages *pages)
 {
 }
 
 static void
-bis_squeezer_pages_class_init (BisSqueezerPagesClass *klass)
+bis_hugger_pages_class_init (BisHuggerPagesClass *klass)
 {
 }
 
-static BisSqueezerPages *
-bis_squeezer_pages_new (BisSqueezer *squeezer)
+static BisHuggerPages *
+bis_hugger_pages_new (BisHugger *hugger)
 {
-  BisSqueezerPages *pages;
+  BisHuggerPages *pages;
 
-  pages = g_object_new (BIS_TYPE_SQUEEZER_PAGES, NULL);
-  pages->squeezer = squeezer;
+  pages = g_object_new (BIS_TYPE_HUGGER_PAGES, NULL);
+  pages->hugger = hugger;
 
   return pages;
 }
 
 static GtkOrientation
-get_orientation (BisSqueezer *self)
+get_orientation (BisHugger *self)
 {
   return self->orientation;
 }
 
 static void
-set_orientation (BisSqueezer    *self,
+set_orientation (BisHugger    *self,
                  GtkOrientation  orientation)
 {
   if (self->orientation == orientation)
@@ -366,11 +366,11 @@ set_orientation (BisSqueezer    *self,
   g_object_notify (G_OBJECT (self), "orientation");
 }
 
-static BisSqueezerPage *
-find_page_for_widget (BisSqueezer *self,
+static BisHuggerPage *
+find_page_for_widget (BisHugger *self,
                       GtkWidget   *child)
 {
-  BisSqueezerPage *page;
+  BisHuggerPage *page;
   GList *l;
 
   for (l = self->children; l != NULL; l = l->next) {
@@ -384,7 +384,7 @@ find_page_for_widget (BisSqueezer *self,
 
 static void
 transition_cb (double       value,
-               BisSqueezer *self)
+               BisHugger *self)
 {
   if (!self->homogeneous)
     gtk_widget_queue_resize (GTK_WIDGET (self));
@@ -393,7 +393,7 @@ transition_cb (double       value,
 }
 
 static void
-set_transition_running (BisSqueezer *self,
+set_transition_running (BisHugger *self,
                         gboolean     running)
 {
   if (self->transition_running == running)
@@ -404,7 +404,7 @@ set_transition_running (BisSqueezer *self,
 }
 
 static void
-transition_done_cb (BisSqueezer *self)
+transition_done_cb (BisHugger *self)
 {
   if (self->last_visible_child) {
     gtk_widget_set_child_visible (self->last_visible_child->widget, FALSE);
@@ -417,9 +417,9 @@ transition_done_cb (BisSqueezer *self)
 }
 
 static void
-set_visible_child (BisSqueezer               *self,
-                   BisSqueezerPage           *page,
-                   BisSqueezerTransitionType  transition_type,
+set_visible_child (BisHugger               *self,
+                   BisHuggerPage           *page,
+                   BisHuggerTransitionType  transition_type,
                    guint                      transition_duration)
 {
   GtkWidget *widget = GTK_WIDGET (self);
@@ -440,7 +440,7 @@ set_visible_child (BisSqueezer               *self,
     GList *l;
 
     for (l = self->children; l; l = l->next) {
-      BisSqueezerPage *p = l->data;
+      BisHuggerPage *p = l->data;
       if (gtk_widget_get_visible (p->widget)) {
         page = p;
         break;
@@ -456,7 +456,7 @@ set_visible_child (BisSqueezer               *self,
     GList *l;
 
     for (l = self->children, position = 0; l; l = l->next, position++) {
-      BisSqueezerPage *p = l->data;
+      BisHuggerPage *p = l->data;
       if (p == self->visible_child)
         old_pos = position;
       else if (p == page)
@@ -530,7 +530,7 @@ set_visible_child (BisSqueezer               *self,
                                              MAX (old_pos, new_pos) - MIN (old_pos, new_pos) + 1);
   }
 
-  if (self->transition_type == BIS_SQUEEZER_TRANSITION_TYPE_NONE ||
+  if (self->transition_type == BIS_HUGGER_TRANSITION_TYPE_NONE ||
       (self->last_visible_child == NULL && !self->allow_none))
     bis_timed_animation_set_duration (BIS_TIMED_ANIMATION (self->animation), 0);
   else
@@ -542,8 +542,8 @@ set_visible_child (BisSqueezer               *self,
 }
 
 static void
-update_child_visible (BisSqueezer     *self,
-                      BisSqueezerPage *page)
+update_child_visible (BisHugger     *self,
+                      BisHuggerPage *page)
 {
   gboolean enabled;
 
@@ -561,13 +561,13 @@ update_child_visible (BisSqueezer     *self,
 }
 
 static void
-squeezer_child_visibility_notify_cb (GObject    *obj,
+hugger_child_visibility_notify_cb (GObject    *obj,
                                      GParamSpec *pspec,
                                      gpointer    user_data)
 {
-  BisSqueezer *self = BIS_SQUEEZER (user_data);
+  BisHugger *self = BIS_HUGGER (user_data);
   GtkWidget *child = GTK_WIDGET (obj);
-  BisSqueezerPage *page;
+  BisHuggerPage *page;
 
   page = find_page_for_widget (self, child);
   g_return_if_fail (page != NULL);
@@ -576,8 +576,8 @@ squeezer_child_visibility_notify_cb (GObject    *obj,
 }
 
 static void
-add_page (BisSqueezer     *self,
-          BisSqueezerPage *page)
+add_page (BisHugger     *self,
+          BisHuggerPage *page)
 {
   g_return_if_fail (page->widget != NULL);
 
@@ -590,7 +590,7 @@ add_page (BisSqueezer     *self,
     g_list_model_items_changed (G_LIST_MODEL (self->pages), g_list_length (self->children) - 1, 0, 1);
 
   g_signal_connect (page->widget, "notify::visible",
-                    G_CALLBACK (squeezer_child_visibility_notify_cb), self);
+                    G_CALLBACK (hugger_child_visibility_notify_cb), self);
 
   if (self->visible_child == NULL &&
       gtk_widget_get_visible (page->widget))
@@ -601,11 +601,11 @@ add_page (BisSqueezer     *self,
 }
 
 static void
-squeezer_remove (BisSqueezer *self,
+hugger_remove (BisHugger *self,
                  GtkWidget   *child,
                  gboolean     in_dispose)
 {
-  BisSqueezerPage *page;
+  BisHuggerPage *page;
   gboolean was_visible;
 
   page = find_page_for_widget (self, child);
@@ -615,7 +615,7 @@ squeezer_remove (BisSqueezer *self,
   self->children = g_list_remove (self->children, page);
 
   g_signal_handlers_disconnect_by_func (child,
-                                        squeezer_child_visibility_notify_cb,
+                                        hugger_child_visibility_notify_cb,
                                         self);
 
   was_visible = gtk_widget_get_visible (child);
@@ -642,49 +642,49 @@ squeezer_remove (BisSqueezer *self,
 }
 
 static void
-bis_squeezer_get_property (GObject    *object,
+bis_hugger_get_property (GObject    *object,
                            guint       property_id,
                            GValue     *value,
                            GParamSpec *pspec)
 {
-  BisSqueezer *self = BIS_SQUEEZER (object);
+  BisHugger *self = BIS_HUGGER (object);
 
   switch (property_id) {
   case PROP_VISIBLE_CHILD:
-    g_value_set_object (value, bis_squeezer_get_visible_child (self));
+    g_value_set_object (value, bis_hugger_get_visible_child (self));
     break;
   case PROP_HOMOGENEOUS:
-    g_value_set_boolean (value, bis_squeezer_get_homogeneous (self));
+    g_value_set_boolean (value, bis_hugger_get_homogeneous (self));
     break;
   case PROP_SWITCH_THRESHOLD_POLICY:
-    g_value_set_enum (value, bis_squeezer_get_switch_threshold_policy (self));
+    g_value_set_enum (value, bis_hugger_get_switch_threshold_policy (self));
     break;
   case PROP_ALLOW_NONE:
-    g_value_set_boolean (value, bis_squeezer_get_allow_none (self));
+    g_value_set_boolean (value, bis_hugger_get_allow_none (self));
     break;
   case PROP_TRANSITION_DURATION:
-    g_value_set_uint (value, bis_squeezer_get_transition_duration (self));
+    g_value_set_uint (value, bis_hugger_get_transition_duration (self));
     break;
   case PROP_TRANSITION_TYPE:
-    g_value_set_enum (value, bis_squeezer_get_transition_type (self));
+    g_value_set_enum (value, bis_hugger_get_transition_type (self));
     break;
   case PROP_TRANSITION_RUNNING:
-    g_value_set_boolean (value, bis_squeezer_get_transition_running (self));
+    g_value_set_boolean (value, bis_hugger_get_transition_running (self));
     break;
   case PROP_INTERPOLATE_SIZE:
-    g_value_set_boolean (value, bis_squeezer_get_interpolate_size (self));
+    g_value_set_boolean (value, bis_hugger_get_interpolate_size (self));
     break;
   case PROP_XALIGN:
-    g_value_set_float (value, bis_squeezer_get_xalign (self));
+    g_value_set_float (value, bis_hugger_get_xalign (self));
     break;
   case PROP_YALIGN:
-    g_value_set_float (value, bis_squeezer_get_yalign (self));
+    g_value_set_float (value, bis_hugger_get_yalign (self));
     break;
   case PROP_ORIENTATION:
     g_value_set_enum (value, get_orientation (self));
     break;
   case PROP_PAGES:
-    g_value_take_object (value, bis_squeezer_get_pages (self));
+    g_value_take_object (value, bis_hugger_get_pages (self));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -693,37 +693,37 @@ bis_squeezer_get_property (GObject    *object,
 }
 
 static void
-bis_squeezer_set_property (GObject      *object,
+bis_hugger_set_property (GObject      *object,
                            guint         property_id,
                            const GValue *value,
                            GParamSpec   *pspec)
 {
-  BisSqueezer *self = BIS_SQUEEZER (object);
+  BisHugger *self = BIS_HUGGER (object);
 
   switch (property_id) {
   case PROP_HOMOGENEOUS:
-    bis_squeezer_set_homogeneous (self, g_value_get_boolean (value));
+    bis_hugger_set_homogeneous (self, g_value_get_boolean (value));
     break;
   case PROP_SWITCH_THRESHOLD_POLICY:
-    bis_squeezer_set_switch_threshold_policy (self, g_value_get_enum (value));
+    bis_hugger_set_switch_threshold_policy (self, g_value_get_enum (value));
     break;
   case PROP_ALLOW_NONE:
-    bis_squeezer_set_allow_none (self, g_value_get_boolean (value));
+    bis_hugger_set_allow_none (self, g_value_get_boolean (value));
     break;
   case PROP_TRANSITION_DURATION:
-    bis_squeezer_set_transition_duration (self, g_value_get_uint (value));
+    bis_hugger_set_transition_duration (self, g_value_get_uint (value));
     break;
   case PROP_TRANSITION_TYPE:
-    bis_squeezer_set_transition_type (self, g_value_get_enum (value));
+    bis_hugger_set_transition_type (self, g_value_get_enum (value));
     break;
   case PROP_INTERPOLATE_SIZE:
-    bis_squeezer_set_interpolate_size (self, g_value_get_boolean (value));
+    bis_hugger_set_interpolate_size (self, g_value_get_boolean (value));
     break;
   case PROP_XALIGN:
-    bis_squeezer_set_xalign (self, g_value_get_float (value));
+    bis_hugger_set_xalign (self, g_value_get_float (value));
     break;
   case PROP_YALIGN:
-    bis_squeezer_set_yalign (self, g_value_get_float (value));
+    bis_hugger_set_yalign (self, g_value_get_float (value));
     break;
   case PROP_ORIENTATION:
     set_orientation (self, g_value_get_enum (value));
@@ -735,10 +735,10 @@ bis_squeezer_set_property (GObject      *object,
 }
 
 static void
-bis_squeezer_snapshot_crossfade (GtkWidget   *widget,
+bis_hugger_snapshot_crossfade (GtkWidget   *widget,
                                  GtkSnapshot *snapshot)
 {
-  BisSqueezer *self = BIS_SQUEEZER (widget);
+  BisHugger *self = BIS_HUGGER (widget);
   double progress = bis_animation_get_value (self->animation);
 
   gtk_snapshot_push_cross_fade (snapshot, progress);
@@ -759,14 +759,14 @@ bis_squeezer_snapshot_crossfade (GtkWidget   *widget,
 
 
 static void
-bis_squeezer_snapshot (GtkWidget   *widget,
+bis_hugger_snapshot (GtkWidget   *widget,
                        GtkSnapshot *snapshot)
 {
-  BisSqueezer *self = BIS_SQUEEZER (widget);
+  BisHugger *self = BIS_HUGGER (widget);
 
   if (self->visible_child || self->allow_none) {
     if (self->transition_running &&
-        self->transition_type != BIS_SQUEEZER_TRANSITION_TYPE_NONE) {
+        self->transition_type != BIS_HUGGER_TRANSITION_TYPE_NONE) {
       gtk_snapshot_push_clip (snapshot,
                               &GRAPHENE_RECT_INIT(
                                   0, 0,
@@ -776,10 +776,10 @@ bis_squeezer_snapshot (GtkWidget   *widget,
 
       switch (self->transition_type)
         {
-        case BIS_SQUEEZER_TRANSITION_TYPE_CROSSFADE:
-          bis_squeezer_snapshot_crossfade (widget, snapshot);
+        case BIS_HUGGER_TRANSITION_TYPE_CROSSFADE:
+          bis_hugger_snapshot_crossfade (widget, snapshot);
           break;
-        case BIS_SQUEEZER_TRANSITION_TYPE_NONE:
+        case BIS_HUGGER_TRANSITION_TYPE_NONE:
         default:
           g_assert_not_reached ();
         }
@@ -794,13 +794,13 @@ bis_squeezer_snapshot (GtkWidget   *widget,
 }
 
 static void
-bis_squeezer_size_allocate (GtkWidget *widget,
+bis_hugger_size_allocate (GtkWidget *widget,
                             int        width,
                             int        height,
                             int        baseline)
 {
-  BisSqueezer *self = BIS_SQUEEZER (widget);
-  BisSqueezerPage *page = NULL;
+  BisHugger *self = BIS_HUGGER (widget);
+  BisHuggerPage *page = NULL;
   GList *l;
   GtkAllocation child_allocation;
 
@@ -914,7 +914,7 @@ bis_squeezer_size_allocate (GtkWidget *widget,
 }
 
 static void
-bis_squeezer_measure (GtkWidget      *widget,
+bis_hugger_measure (GtkWidget      *widget,
                       GtkOrientation  orientation,
                       int             for_size,
                       int            *minimum,
@@ -922,13 +922,13 @@ bis_squeezer_measure (GtkWidget      *widget,
                       int            *minimum_baseline,
                       int            *natural_baseline)
 {
-  BisSqueezer *self = BIS_SQUEEZER (widget);
+  BisHugger *self = BIS_HUGGER (widget);
   int child_min, child_nat;
   GList *l;
   int min = 0, nat = 0;
 
   for (l = self->children; l != NULL; l = l->next) {
-    BisSqueezerPage *page = l->data;
+    BisHuggerPage *page = l->data;
     GtkWidget *child = page->widget;
 
     if (self->orientation != orientation && !self->homogeneous &&
@@ -988,9 +988,9 @@ bis_squeezer_measure (GtkWidget      *widget,
 }
 
 static void
-bis_squeezer_dispose (GObject *object)
+bis_hugger_dispose (GObject *object)
 {
-  BisSqueezer *self = BIS_SQUEEZER (object);
+  BisHugger *self = BIS_HUGGER (object);
   GtkWidget *child;
 
   if (self->pages)
@@ -998,39 +998,39 @@ bis_squeezer_dispose (GObject *object)
                                 g_list_length (self->children), 0);
 
   while ((child = gtk_widget_get_first_child (GTK_WIDGET (self))))
-    squeezer_remove (self, child, TRUE);
+    hugger_remove (self, child, TRUE);
 
   g_clear_object (&self->animation);
 
-  G_OBJECT_CLASS (bis_squeezer_parent_class)->dispose (object);
+  G_OBJECT_CLASS (bis_hugger_parent_class)->dispose (object);
 }
 
 static void
-bis_squeezer_finalize (GObject *object)
+bis_hugger_finalize (GObject *object)
 {
-  BisSqueezer *self = BIS_SQUEEZER (object);
+  BisHugger *self = BIS_HUGGER (object);
 
   if (self->pages)
     g_object_remove_weak_pointer (G_OBJECT (self->pages),
                                   (gpointer *) &self->pages);
 
-  G_OBJECT_CLASS (bis_squeezer_parent_class)->finalize (object);
+  G_OBJECT_CLASS (bis_hugger_parent_class)->finalize (object);
 }
 
 static void
-bis_squeezer_class_init (BisSqueezerClass *klass)
+bis_hugger_class_init (BisHuggerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  object_class->get_property = bis_squeezer_get_property;
-  object_class->set_property = bis_squeezer_set_property;
-  object_class->dispose = bis_squeezer_dispose;
-  object_class->finalize = bis_squeezer_finalize;
+  object_class->get_property = bis_hugger_get_property;
+  object_class->set_property = bis_hugger_set_property;
+  object_class->dispose = bis_hugger_dispose;
+  object_class->finalize = bis_hugger_finalize;
 
-  widget_class->size_allocate = bis_squeezer_size_allocate;
-  widget_class->snapshot = bis_squeezer_snapshot;
-  widget_class->measure = bis_squeezer_measure;
+  widget_class->size_allocate = bis_hugger_size_allocate;
+  widget_class->snapshot = bis_hugger_snapshot;
+  widget_class->measure = bis_hugger_measure;
   widget_class->get_request_mode = bis_widget_get_request_mode;
   widget_class->compute_expand = bis_widget_compute_expand;
 
@@ -1039,7 +1039,7 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                                     "orientation");
 
   /**
-   * BisSqueezer:visible-child: (attributes org.gtk.Property.get=bis_squeezer_get_visible_child)
+   * BisHugger:visible-child: (attributes org.gtk.Property.get=bis_hugger_get_visible_child)
    *
    * The currently visible child.
    *
@@ -1051,12 +1051,12 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisSqueezer:homogeneous: (attributes org.gtk.Property.get=bis_squeezer_get_homogeneous org.gtk.Property.set=bis_squeezer_set_homogeneous)
+   * BisHugger:homogeneous: (attributes org.gtk.Property.get=bis_hugger_get_homogeneous org.gtk.Property.set=bis_hugger_set_homogeneous)
    *
    * Whether all children have the same size for the opposite orientation.
    *
-   * For example, if a squeezer is horizontal and is homogeneous, it will
-   * request the same height for all its children. If it isn't, the squeezer may
+   * For example, if a hugger is horizontal and is homogeneous, it will
+   * request the same height for all its children. If it isn't, the hugger may
    * change size when a different child becomes visible.
    *
    * Since: 1.0
@@ -1067,11 +1067,11 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:switch-threshold-policy: (attributes org.gtk.Property.get=bis_squeezer_get_switch_threshold_policy org.gtk.Property.set=bis_squeezer_set_switch_threshold_policy)
+   * BisHugger:switch-threshold-policy: (attributes org.gtk.Property.get=bis_hugger_get_switch_threshold_policy org.gtk.Property.set=bis_hugger_set_switch_threshold_policy)
    *
    * The switch threshold policy.
    *
-   * Determines when the squeezer will switch children.
+   * Determines when the hugger will switch children.
    *
    * If set to `BIS_FOLD_THRESHOLD_POLICY_MINIMUM`, it will only switch when the
    * visible child cannot fit anymore. With `BIS_FOLD_THRESHOLD_POLICY_NATURAL`,
@@ -1089,11 +1089,11 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:allow-none: (attributes org.gtk.Property.get=bis_squeezer_get_allow_none org.gtk.Property.set=bis_squeezer_set_allow_none)
+   * BisHugger:allow-none: (attributes org.gtk.Property.get=bis_hugger_get_allow_none org.gtk.Property.set=bis_hugger_set_allow_none)
    *
    * Whether to allow squeezing beyond the last child's minimum size.
    *
-   * If set to `TRUE`, the squeezer can shrink to the point where no child can
+   * If set to `TRUE`, the hugger can shrink to the point where no child can
    * be shown. This is functionally equivalent to appending a widget with 0×0
    * minimum size.
    *
@@ -1105,7 +1105,7 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:transition-duration: (attributes org.gtk.Property.get=bis_squeezer_get_transition_duration org.gtk.Property.set=bis_squeezer_set_transition_duration)
+   * BisHugger:transition-duration: (attributes org.gtk.Property.get=bis_hugger_get_transition_duration org.gtk.Property.set=bis_hugger_set_transition_duration)
    *
    * The transition animation duration, in milliseconds.
    *
@@ -1117,7 +1117,7 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:transition-type: (attributes org.gtk.Property.get=bis_squeezer_get_transition_type org.gtk.Property.set=bis_squeezer_set_transition_type)
+   * BisHugger:transition-type: (attributes org.gtk.Property.get=bis_hugger_get_transition_type org.gtk.Property.set=bis_hugger_set_transition_type)
    *
    * The type of animation used for transitions between children.
    *
@@ -1125,12 +1125,12 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
    */
   props[PROP_TRANSITION_TYPE] =
     g_param_spec_enum ("transition-type", NULL, NULL,
-                       BIS_TYPE_SQUEEZER_TRANSITION_TYPE,
-                       BIS_SQUEEZER_TRANSITION_TYPE_NONE,
+                       BIS_TYPE_HUGGER_TRANSITION_TYPE,
+                       BIS_HUGGER_TRANSITION_TYPE_NONE,
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:transition-running: (attributes org.gtk.Property.get=bis_squeezer_get_transition_running)
+   * BisHugger:transition-running: (attributes org.gtk.Property.get=bis_hugger_get_transition_running)
    *
    * Whether a transition is currently running.
    *
@@ -1146,13 +1146,13 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisSqueezer:interpolate-size: (attributes org.gtk.Property.get=bis_squeezer_get_interpolate_size org.gtk.Property.set=bis_squeezer_set_interpolate_size)
+   * BisHugger:interpolate-size: (attributes org.gtk.Property.get=bis_hugger_get_interpolate_size org.gtk.Property.set=bis_hugger_set_interpolate_size)
    *
-   * Whether the squeezer interpolates its size when changing the visible child.
+   * Whether the hugger interpolates its size when changing the visible child.
    *
-   * If `TRUE`, the squeezer will interpolate its size between the one of the
+   * If `TRUE`, the hugger will interpolate its size between the one of the
    * previous visible child and the one of the new visible child, according to
-   * the set transition duration and the orientation, e.g. if the squeezer is
+   * the set transition duration and the orientation, e.g. if the hugger is
    * horizontal, it will interpolate the its height.
    *
    * Since: 1.0
@@ -1163,12 +1163,12 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:xalign: (attributes org.gtk.Property.get=bis_squeezer_get_xalign org.gtk.Property.set=bis_squeezer_set_xalign)
+   * BisHugger:xalign: (attributes org.gtk.Property.get=bis_hugger_get_xalign org.gtk.Property.set=bis_hugger_set_xalign)
    *
    * The horizontal alignment, from 0 (start) to 1 (end).
    *
    * This affects the children allocation during transitions, when they exceed
-   * the size of the squeezer.
+   * the size of the hugger.
    *
    * For example, 0.5 means the child will be centered, 0 means it will keep the
    * start side aligned and overflow the end side, and 1 means the opposite.
@@ -1182,12 +1182,12 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:yalign: (attributes org.gtk.Property.get=bis_squeezer_get_yalign org.gtk.Property.set=bis_squeezer_set_yalign)
+   * BisHugger:yalign: (attributes org.gtk.Property.get=bis_hugger_get_yalign org.gtk.Property.set=bis_hugger_set_yalign)
    *
    * The vertical alignment, from 0 (top) to 1 (bottom).
    *
    * This affects the children allocation during transitions, when they exceed
-   * the size of the squeezer.
+   * the size of the hugger.
    *
    * For example, 0.5 means the child will be centered, 0 means it will keep the
    * top side aligned and overflow the bottom side, and 1 means the opposite.
@@ -1201,9 +1201,9 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSqueezer:pages: (attributes org.gtk.Property.get=bis_squeezer_get_pages)
+   * BisHugger:pages: (attributes org.gtk.Property.get=bis_hugger_get_pages)
    *
-   * A selection model with the squeezer's pages.
+   * A selection model with the hugger's pages.
    *
    * This can be used to keep an up-to-date view. The model also implements
    * [iface@Gtk.SelectionModel] and can be used to track the visible page.
@@ -1217,17 +1217,17 @@ bis_squeezer_class_init (BisSqueezerClass *klass)
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 
-  gtk_widget_class_set_css_name (widget_class, "squeezer");
+  gtk_widget_class_set_css_name (widget_class, "hugger");
 }
 
 static void
-bis_squeezer_init (BisSqueezer *self)
+bis_hugger_init (BisHugger *self)
 {
   BisAnimationTarget *target;
 
   self->homogeneous = TRUE;
   self->transition_duration = 200;
-  self->transition_type = BIS_SQUEEZER_TRANSITION_TYPE_NONE;
+  self->transition_type = BIS_HUGGER_TRANSITION_TYPE_NONE;
   self->xalign = 0.5;
   self->yalign = 0.5;
 
@@ -1243,48 +1243,48 @@ bis_squeezer_init (BisSqueezer *self)
 }
 
 static void
-bis_squeezer_buildable_add_child (GtkBuildable *buildable,
+bis_hugger_buildable_add_child (GtkBuildable *buildable,
                                   GtkBuilder   *builder,
                                   GObject      *child,
                                   const char   *type)
 {
-  if (BIS_IS_SQUEEZER_PAGE (child))
-    add_page (BIS_SQUEEZER (buildable), BIS_SQUEEZER_PAGE (child));
+  if (BIS_IS_HUGGER_PAGE (child))
+    add_page (BIS_HUGGER (buildable), BIS_HUGGER_PAGE (child));
   else if (GTK_IS_WIDGET (child))
-    bis_squeezer_add (BIS_SQUEEZER (buildable), GTK_WIDGET (child));
+    bis_hugger_add (BIS_HUGGER (buildable), GTK_WIDGET (child));
   else
     parent_buildable_iface->add_child (buildable, builder, child, type);
 }
 
 static void
-bis_squeezer_buildable_init (GtkBuildableIface *iface)
+bis_hugger_buildable_init (GtkBuildableIface *iface)
 {
   parent_buildable_iface = g_type_interface_peek_parent (iface);
 
-  iface->add_child = bis_squeezer_buildable_add_child;
+  iface->add_child = bis_hugger_buildable_add_child;
 }
 
 /**
- * bis_squeezer_page_get_child: (attributes org.gtk.Method.get_property=child)
- * @self: a squeezer page
+ * bis_hugger_page_get_child: (attributes org.gtk.Method.get_property=child)
+ * @self: a hugger page
  *
- * Returns the squeezer child to which @self belongs.
+ * Returns the hugger child to which @self belongs.
  *
  * Returns: (transfer none): the child to which @self belongs
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_squeezer_page_get_child (BisSqueezerPage *self)
+bis_hugger_page_get_child (BisHuggerPage *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER_PAGE (self), NULL);
+  g_return_val_if_fail (BIS_IS_HUGGER_PAGE (self), NULL);
 
   return self->widget;
 }
 
 /**
- * bis_squeezer_page_get_enabled: (attributes org.gtk.Method.get_property=enabled)
- * @self: a squeezer page
+ * bis_hugger_page_get_enabled: (attributes org.gtk.Method.get_property=enabled)
+ * @self: a hugger page
  *
  * Gets whether @self is enabled.
  *
@@ -1293,16 +1293,16 @@ bis_squeezer_page_get_child (BisSqueezerPage *self)
  * Since: 1.0
  */
 gboolean
-bis_squeezer_page_get_enabled (BisSqueezerPage *self)
+bis_hugger_page_get_enabled (BisHuggerPage *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER_PAGE (self), FALSE);
+  g_return_val_if_fail (BIS_IS_HUGGER_PAGE (self), FALSE);
 
   return self->enabled;
 }
 
 /**
- * bis_squeezer_page_set_enabled: (attributes org.gtk.Method.set_property=enabled)
- * @self: a squeezer page
+ * bis_hugger_page_set_enabled: (attributes org.gtk.Method.set_property=enabled)
+ * @self: a hugger page
  * @enabled: whether @self is enabled
  *
  * Sets whether @self is enabled.
@@ -1319,10 +1319,10 @@ bis_squeezer_page_get_enabled (BisSqueezerPage *self)
  * Since: 1.0
  */
 void
-bis_squeezer_page_set_enabled (BisSqueezerPage *self,
+bis_hugger_page_set_enabled (BisHuggerPage *self,
                                gboolean         enabled)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER_PAGE (self));
+  g_return_if_fail (BIS_IS_HUGGER_PAGE (self));
 
   enabled = !!enabled;
 
@@ -1332,51 +1332,51 @@ bis_squeezer_page_set_enabled (BisSqueezerPage *self,
   self->enabled = enabled;
 
   if (self->widget && gtk_widget_get_parent (self->widget)) {
-    BisSqueezer *squeezer = BIS_SQUEEZER (gtk_widget_get_parent (self->widget));
+    BisHugger *hugger = BIS_HUGGER (gtk_widget_get_parent (self->widget));
 
-    gtk_widget_queue_resize (GTK_WIDGET (squeezer));
-    update_child_visible (squeezer, self);
+    gtk_widget_queue_resize (GTK_WIDGET (hugger));
+    update_child_visible (hugger, self);
   }
 
   g_object_notify_by_pspec (G_OBJECT (self), page_props[PAGE_PROP_ENABLED]);
 }
 
 /**
- * bis_squeezer_new:
+ * bis_hugger_new:
  *
- * Creates a new `BisSqueezer`.
+ * Creates a new `BisHugger`.
  *
- * Returns: the newly created `BisSqueezer`
+ * Returns: the newly created `BisHugger`
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_squeezer_new (void)
+bis_hugger_new (void)
 {
-  return g_object_new (BIS_TYPE_SQUEEZER, NULL);
+  return g_object_new (BIS_TYPE_HUGGER, NULL);
 }
 
 /**
- * bis_squeezer_add:
- * @self: a squeezer
+ * bis_hugger_add:
+ * @self: a hugger
  * @child: the widget to add
  *
  * Adds a child to @self.
  *
- * Returns: (transfer none): the [class@SqueezerPage] for @child
+ * Returns: (transfer none): the [class@HuggerPage] for @child
  *
  * Since: 1.0
  */
-BisSqueezerPage *
-bis_squeezer_add (BisSqueezer *self,
+BisHuggerPage *
+bis_hugger_add (BisHugger *self,
                   GtkWidget   *child)
 {
-  BisSqueezerPage *page;
+  BisHuggerPage *page;
 
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), NULL);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
 
-  page = g_object_new (BIS_TYPE_SQUEEZER_PAGE, NULL);
+  page = g_object_new (BIS_TYPE_HUGGER_PAGE, NULL);
   page->widget = g_object_ref (child);
 
   add_page (self, page);
@@ -1387,8 +1387,8 @@ bis_squeezer_add (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_remove:
- * @self: a squeezer
+ * bis_hugger_remove:
+ * @self: a hugger
  * @child: the child to remove
  *
  * Removes a child widget from @self.
@@ -1396,53 +1396,53 @@ bis_squeezer_add (BisSqueezer *self,
  * Since: 1.0
  */
 void
-bis_squeezer_remove (BisSqueezer *self,
+bis_hugger_remove (BisHugger *self,
                      GtkWidget   *child)
 {
   GList *l;
   guint position;
 
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
   g_return_if_fail (GTK_IS_WIDGET (child));
   g_return_if_fail (gtk_widget_get_parent (child) == GTK_WIDGET (self));
 
   for (l = self->children, position = 0; l; l = l->next, position++) {
-    BisSqueezerPage *page = l->data;
+    BisHuggerPage *page = l->data;
 
     if (page->widget == child)
       break;
   }
 
-  squeezer_remove (self, child, FALSE);
+  hugger_remove (self, child, FALSE);
 
   if (self->pages)
     g_list_model_items_changed (G_LIST_MODEL (self->pages), position, 1, 0);
 }
 
 /**
- * bis_squeezer_get_page:
- * @self: a squeezer
+ * bis_hugger_get_page:
+ * @self: a hugger
  * @child: a child of @self
  *
- * Returns the [class@SqueezerPage] object for @child.
+ * Returns the [class@HuggerPage] object for @child.
  *
  * Returns: (transfer none): the page object for @child
  *
  * Since: 1.0
  */
-BisSqueezerPage *
-bis_squeezer_get_page (BisSqueezer *self,
+BisHuggerPage *
+bis_hugger_get_page (BisHugger *self,
                        GtkWidget   *child)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), NULL);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
 
   return find_page_for_widget (self, child);
 }
 
 /**
- * bis_squeezer_get_visible_child: (attributes org.gtk.Method.get_property=visible-child)
- * @self: a squeezer
+ * bis_hugger_get_visible_child: (attributes org.gtk.Method.get_property=visible-child)
+ * @self: a hugger
  *
  * Gets the currently visible child of @self.
  *
@@ -1451,16 +1451,16 @@ bis_squeezer_get_page (BisSqueezer *self,
  * Since: 1.0
  */
 GtkWidget *
-bis_squeezer_get_visible_child (BisSqueezer *self)
+bis_hugger_get_visible_child (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), NULL);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), NULL);
 
   return self->visible_child ? self->visible_child->widget : NULL;
 }
 
 /**
- * bis_squeezer_get_homogeneous: (attributes org.gtk.Method.get_property=homogeneous)
- * @self: a squeezer
+ * bis_hugger_get_homogeneous: (attributes org.gtk.Method.get_property=homogeneous)
+ * @self: a hugger
  *
  * Gets whether all children have the same size for the opposite orientation.
  *
@@ -1469,31 +1469,31 @@ bis_squeezer_get_visible_child (BisSqueezer *self)
  * Since: 1.0
  */
 gboolean
-bis_squeezer_get_homogeneous (BisSqueezer *self)
+bis_hugger_get_homogeneous (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), FALSE);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), FALSE);
 
   return self->homogeneous;
 }
 
 /**
- * bis_squeezer_set_homogeneous: (attributes org.gtk.Method.set_property=homogeneous)
- * @self: a squeezer
+ * bis_hugger_set_homogeneous: (attributes org.gtk.Method.set_property=homogeneous)
+ * @self: a hugger
  * @homogeneous: whether @self is homogeneous
  *
  * Sets whether all children have the same size for the opposite orientation.
  *
- * For example, if a squeezer is horizontal and is homogeneous, it will request
- * the same height for all its children. If it isn't, the squeezer may change
+ * For example, if a hugger is horizontal and is homogeneous, it will request
+ * the same height for all its children. If it isn't, the hugger may change
  * size when a different child becomes visible.
  *
  * Since: 1.0
  */
 void
-bis_squeezer_set_homogeneous (BisSqueezer *self,
+bis_hugger_set_homogeneous (BisHugger *self,
                               gboolean     homogeneous)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   homogeneous = !!homogeneous;
 
@@ -1509,30 +1509,30 @@ bis_squeezer_set_homogeneous (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_switch_threshold_policy: (attributes org.gtk.Method.get_property=switch-threshold-policy)
- * @self: a squeezer
+ * bis_hugger_get_switch_threshold_policy: (attributes org.gtk.Method.get_property=switch-threshold-policy)
+ * @self: a hugger
  *
  * Gets the switch threshold policy for @self.
  *
  * Since: 1.0
  */
 BisFoldThresholdPolicy
-bis_squeezer_get_switch_threshold_policy (BisSqueezer *self)
+bis_hugger_get_switch_threshold_policy (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), BIS_FOLD_THRESHOLD_POLICY_NATURAL);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), BIS_FOLD_THRESHOLD_POLICY_NATURAL);
 
   return self->switch_threshold_policy;
 }
 
 
 /**
- * bis_squeezer_set_switch_threshold_policy: (attributes org.gtk.Method.set_property=switch-threshold-policy)
- * @self: a squeezer
+ * bis_hugger_set_switch_threshold_policy: (attributes org.gtk.Method.set_property=switch-threshold-policy)
+ * @self: a hugger
  * @policy: the policy to use
  *
  * Sets the switch threshold policy for @self.
  *
- * Determines when the squeezer will switch children.
+ * Determines when the hugger will switch children.
  *
  * If set to `BIS_FOLD_THRESHOLD_POLICY_MINIMUM`, it will only switch when the
  * visible child cannot fit anymore. With `BIS_FOLD_THRESHOLD_POLICY_NATURAL`,
@@ -1544,10 +1544,10 @@ bis_squeezer_get_switch_threshold_policy (BisSqueezer *self)
  * Since: 1.0
  */
 void
-bis_squeezer_set_switch_threshold_policy (BisSqueezer            *self,
+bis_hugger_set_switch_threshold_policy (BisHugger            *self,
                                           BisFoldThresholdPolicy  policy)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
   g_return_if_fail (policy <= BIS_FOLD_THRESHOLD_POLICY_NATURAL);
 
   if (self->switch_threshold_policy == policy)
@@ -1561,8 +1561,8 @@ bis_squeezer_set_switch_threshold_policy (BisSqueezer            *self,
 }
 
 /**
- * bis_squeezer_get_allow_none: (attributes org.gtk.Method.get_property=allow-none)
- * @self: a squeezer
+ * bis_hugger_get_allow_none: (attributes org.gtk.Method.get_property=allow-none)
+ * @self: a hugger
  *
  * Gets whether to allow squeezing beyond the last child's minimum size.
  *
@@ -1571,31 +1571,31 @@ bis_squeezer_set_switch_threshold_policy (BisSqueezer            *self,
  * Since: 1.0
  */
 gboolean
-bis_squeezer_get_allow_none (BisSqueezer *self)
+bis_hugger_get_allow_none (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), FALSE);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), FALSE);
 
   return self->allow_none;
 }
 
 /**
- * bis_squeezer_set_allow_none: (attributes org.gtk.Method.set_property=allow-none)
- * @self: a squeezer
+ * bis_hugger_set_allow_none: (attributes org.gtk.Method.set_property=allow-none)
+ * @self: a hugger
  * @allow_none: whether @self allows squeezing beyond the last child
  *
  * Sets whether to allow squeezing beyond the last child's minimum size.
  *
- * If set to `TRUE`, the squeezer can shrink to the point where no child can be
+ * If set to `TRUE`, the hugger can shrink to the point where no child can be
  * shown. This is functionally equivalent to appending a widget with 0×0 minimum
  * size.
  *
  * Since: 1.0
  */
 void
-bis_squeezer_set_allow_none (BisSqueezer *self,
+bis_hugger_set_allow_none (BisHugger *self,
                              gboolean     allow_none)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   allow_none = !!allow_none;
 
@@ -1610,8 +1610,8 @@ bis_squeezer_set_allow_none (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_transition_duration: (attributes org.gtk.Method.get_property=transition-duration)
- * @self: a squeezer
+ * bis_hugger_get_transition_duration: (attributes org.gtk.Method.get_property=transition-duration)
+ * @self: a hugger
  *
  * Gets the transition animation duration for @self.
  *
@@ -1620,16 +1620,16 @@ bis_squeezer_set_allow_none (BisSqueezer *self,
  * Since: 1.0
  */
 guint
-bis_squeezer_get_transition_duration (BisSqueezer *self)
+bis_hugger_get_transition_duration (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), 0);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), 0);
 
   return self->transition_duration;
 }
 
 /**
- * bis_squeezer_set_transition_duration: (attributes org.gtk.Method.set_property=transition-duration)
- * @self: a squeezer
+ * bis_hugger_set_transition_duration: (attributes org.gtk.Method.set_property=transition-duration)
+ * @self: a hugger
  * @duration: the new duration, in milliseconds
  *
  * Sets the transition animation duration for @self.
@@ -1637,10 +1637,10 @@ bis_squeezer_get_transition_duration (BisSqueezer *self)
  * Since: 1.0
  */
 void
-bis_squeezer_set_transition_duration (BisSqueezer *self,
+bis_hugger_set_transition_duration (BisHugger *self,
                                       guint        duration)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   if (self->transition_duration == duration)
     return;
@@ -1651,8 +1651,8 @@ bis_squeezer_set_transition_duration (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_transition_type: (attributes org.gtk.Method.get_property=transition-type)
- * @self: a squeezer
+ * bis_hugger_get_transition_type: (attributes org.gtk.Method.get_property=transition-type)
+ * @self: a hugger
  *
  * Gets the type of animation used for transitions between children in @self.
  *
@@ -1660,17 +1660,17 @@ bis_squeezer_set_transition_duration (BisSqueezer *self,
  *
  * Since: 1.0
  */
-BisSqueezerTransitionType
-bis_squeezer_get_transition_type (BisSqueezer *self)
+BisHuggerTransitionType
+bis_hugger_get_transition_type (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), BIS_SQUEEZER_TRANSITION_TYPE_NONE);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), BIS_HUGGER_TRANSITION_TYPE_NONE);
 
   return self->transition_type;
 }
 
 /**
- * bis_squeezer_set_transition_type: (attributes org.gtk.Method.set_property=transition-type)
- * @self: a squeezer
+ * bis_hugger_set_transition_type: (attributes org.gtk.Method.set_property=transition-type)
+ * @self: a hugger
  * @transition: the new transition type
  *
  * Sets the type of animation used for transitions between children in @self.
@@ -1678,10 +1678,10 @@ bis_squeezer_get_transition_type (BisSqueezer *self)
  * Since: 1.0
  */
 void
-bis_squeezer_set_transition_type (BisSqueezer               *self,
-                                  BisSqueezerTransitionType  transition)
+bis_hugger_set_transition_type (BisHugger               *self,
+                                  BisHuggerTransitionType  transition)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   if (self->transition_type == transition)
     return;
@@ -1691,8 +1691,8 @@ bis_squeezer_set_transition_type (BisSqueezer               *self,
 }
 
 /**
- * bis_squeezer_get_transition_running: (attributes org.gtk.Method.get_property=transition-running)
- * @self: a squeezer
+ * bis_hugger_get_transition_running: (attributes org.gtk.Method.get_property=transition-running)
+ * @self: a hugger
  *
  * Gets whether a transition is currently running for @self.
  *
@@ -1705,16 +1705,16 @@ bis_squeezer_set_transition_type (BisSqueezer               *self,
  * Since: 1.0
  */
 gboolean
-bis_squeezer_get_transition_running (BisSqueezer *self)
+bis_hugger_get_transition_running (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), FALSE);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), FALSE);
 
   return self->transition_running;
 }
 
 /**
- * bis_squeezer_get_interpolate_size: (attributes org.gtk.Method.get_property=interpolate-size)
- * @self: A squeezer
+ * bis_hugger_get_interpolate_size: (attributes org.gtk.Method.get_property=interpolate-size)
+ * @self: A hugger
  *
  * Gets whether @self interpolates its size when changing the visible child.
  *
@@ -1723,32 +1723,32 @@ bis_squeezer_get_transition_running (BisSqueezer *self)
  * Since: 1.0
  */
 gboolean
-bis_squeezer_get_interpolate_size (BisSqueezer *self)
+bis_hugger_get_interpolate_size (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), FALSE);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), FALSE);
 
   return self->interpolate_size;
 }
 
 /**
- * bis_squeezer_set_interpolate_size: (attributes org.gtk.Method.set_property=interpolate-size)
- * @self: A squeezer
+ * bis_hugger_set_interpolate_size: (attributes org.gtk.Method.set_property=interpolate-size)
+ * @self: A hugger
  * @interpolate_size: whether to interpolate the size
  *
  * Sets whether @self interpolates its size when changing the visible child.
  *
- * If `TRUE`, the squeezer will interpolate its size between the one of the
+ * If `TRUE`, the hugger will interpolate its size between the one of the
  * previous visible child and the one of the new visible child, according to the
- * set transition duration and the orientation, e.g. if the squeezer is
+ * set transition duration and the orientation, e.g. if the hugger is
  * horizontal, it will interpolate the its height.
  *
  * Since: 1.0
  */
 void
-bis_squeezer_set_interpolate_size (BisSqueezer *self,
+bis_hugger_set_interpolate_size (BisHugger *self,
                                    gboolean     interpolate_size)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   interpolate_size = !!interpolate_size;
 
@@ -1760,8 +1760,8 @@ bis_squeezer_set_interpolate_size (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_xalign: (attributes org.gtk.Method.get_property=xalign)
- * @self: a squeezer
+ * bis_hugger_get_xalign: (attributes org.gtk.Method.get_property=xalign)
+ * @self: a hugger
  *
  * Gets the horizontal alignment, from 0 (start) to 1 (end).
  *
@@ -1770,22 +1770,22 @@ bis_squeezer_set_interpolate_size (BisSqueezer *self,
  * Since: 1.0
  */
 float
-bis_squeezer_get_xalign (BisSqueezer *self)
+bis_hugger_get_xalign (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), 0.5);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), 0.5);
 
   return self->xalign;
 }
 
 /**
- * bis_squeezer_set_xalign: (attributes org.gtk.Method.set_property=xalign)
- * @self: a squeezer
+ * bis_hugger_set_xalign: (attributes org.gtk.Method.set_property=xalign)
+ * @self: a hugger
  * @xalign: the new alignment value
  *
  * Sets the horizontal alignment, from 0 (start) to 1 (end).
  *
  * This affects the children allocation during transitions, when they exceed the
- * size of the squeezer.
+ * size of the hugger.
  *
  * For example, 0.5 means the child will be centered, 0 means it will keep the
  * start side aligned and overflow the end side, and 1 means the opposite.
@@ -1793,10 +1793,10 @@ bis_squeezer_get_xalign (BisSqueezer *self)
  * Since: 1.0
  */
 void
-bis_squeezer_set_xalign (BisSqueezer *self,
+bis_hugger_set_xalign (BisHugger *self,
                          float        xalign)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   xalign = CLAMP (xalign, 0.0, 1.0);
 
@@ -1809,8 +1809,8 @@ bis_squeezer_set_xalign (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_yalign: (attributes org.gtk.Method.get_property=yalign)
- * @self: a squeezer
+ * bis_hugger_get_yalign: (attributes org.gtk.Method.get_property=yalign)
+ * @self: a hugger
  *
  * Gets the vertical alignment, from 0 (top) to 1 (bottom).
  *
@@ -1819,22 +1819,22 @@ bis_squeezer_set_xalign (BisSqueezer *self,
  * Since: 1.0
  */
 float
-bis_squeezer_get_yalign (BisSqueezer *self)
+bis_hugger_get_yalign (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), 0.5);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), 0.5);
 
   return self->yalign;
 }
 
 /**
- * bis_squeezer_set_yalign: (attributes org.gtk.Method.set_property=yalign)
- * @self: a squeezer
+ * bis_hugger_set_yalign: (attributes org.gtk.Method.set_property=yalign)
+ * @self: a hugger
  * @yalign: the new alignment value
  *
  * Sets the vertical alignment, from 0 (top) to 1 (bottom).
  *
  * This affects the children allocation during transitions, when they exceed the
- * size of the squeezer.
+ * size of the hugger.
  *
  * For example, 0.5 means the child will be centered, 0 means it will keep the
  * top side aligned and overflow the bottom side, and 1 means the opposite.
@@ -1842,10 +1842,10 @@ bis_squeezer_get_yalign (BisSqueezer *self)
  * Since: 1.0
  */
 void
-bis_squeezer_set_yalign (BisSqueezer *self,
+bis_hugger_set_yalign (BisHugger *self,
                          float        yalign)
 {
-  g_return_if_fail (BIS_IS_SQUEEZER (self));
+  g_return_if_fail (BIS_IS_HUGGER (self));
 
   yalign = CLAMP (yalign, 0.0, 1.0);
 
@@ -1858,27 +1858,27 @@ bis_squeezer_set_yalign (BisSqueezer *self,
 }
 
 /**
- * bis_squeezer_get_pages: (attributes org.gtk.Method.get_property=pages)
- * @self: a squeezer
+ * bis_hugger_get_pages: (attributes org.gtk.Method.get_property=pages)
+ * @self: a hugger
  *
  * Returns a [iface@Gio.ListModel] that contains the pages of @self.
  *
  * This can be used to keep an up-to-date view. The model also implements
  * [iface@Gtk.SelectionModel] and can be used to track the visible page.
  *
- * Returns: (transfer full): a `GtkSelectionModel` for the squeezer's children
+ * Returns: (transfer full): a `GtkSelectionModel` for the hugger's children
  *
  * Since: 1.0
  */
 GtkSelectionModel *
-bis_squeezer_get_pages (BisSqueezer *self)
+bis_hugger_get_pages (BisHugger *self)
 {
-  g_return_val_if_fail (BIS_IS_SQUEEZER (self), NULL);
+  g_return_val_if_fail (BIS_IS_HUGGER (self), NULL);
 
   if (self->pages)
     return g_object_ref (self->pages);
 
-  self->pages = GTK_SELECTION_MODEL (bis_squeezer_pages_new (self));
+  self->pages = GTK_SELECTION_MODEL (bis_hugger_pages_new (self));
   g_object_add_weak_pointer (G_OBJECT (self->pages), (gpointer *) &self->pages);
 
   return self->pages;

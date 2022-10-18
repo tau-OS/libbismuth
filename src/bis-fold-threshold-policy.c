@@ -12,7 +12,7 @@
  * @BIS_FOLD_THRESHOLD_POLICY_MINIMUM: Folding is based on the minimum size
  * @BIS_FOLD_THRESHOLD_POLICY_NATURAL: Folding is based on the natural size
  *
- * Determines when [class@Flap] and [class@Leaflet] will fold.
+ * Determines when [class@Lapel] and [class@Album] will fold.
  *
  * Since: 1.0
  */

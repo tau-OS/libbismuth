@@ -11,7 +11,7 @@
 #include "bis-enums-private.h"
 #include "bis-fold-threshold-policy.h"
 #include "bis-macros-private.h"
-#include "bis-leaflet.h"
+#include "bis-album.h"
 #include "bis-shadow-helper-private.h"
 #include "bis-spring-animation.h"
 #include "bis-swipeable.h"
@@ -20,27 +20,27 @@
 #include "bis-widget-utils-private.h"
 
 /**
- * BisLeaflet:
+ * BisAlbum:
  *
  * An adaptive container acting like a box or a stack.
  *
  * <picture>
- *   <source srcset="leaflet-wide-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="leaflet-wide.png" alt="leaflet-wide">
+ *   <source srcset="album-wide-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="album-wide.png" alt="album-wide">
  * </picture>
  * <picture>
- *   <source srcset="leaflet-narrow-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="leaflet-narrow.png" alt="leaflet-narrow">
+ *   <source srcset="album-narrow-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="album-narrow.png" alt="album-narrow">
  * </picture>
  *
- * The `BisLeaflet` widget can display its children like a [class@Gtk.Box] does
+ * The `BisAlbum` widget can display its children like a [class@Gtk.Box] does
  * or like a [class@Gtk.Stack] does, adapting to size changes by switching
  * between the two modes.
  *
  * When there is enough space the children are displayed side by side, otherwise
- * only one is displayed and the leaflet is said to be “folded”.
+ * only one is displayed and the album is said to be “folded”.
  * The threshold is dictated by the preferred minimum sizes of the children.
- * When a leaflet is folded, the children can be navigated using swipe gestures.
+ * When a album is folded, the children can be navigated using swipe gestures.
  *
  * The “over” and “under” transition types stack the children one on top of the
  * other, while the “slide” transition puts the children side by side. While
@@ -50,7 +50,7 @@
  *
  * ## CSS nodes
  *
- * `BisLeaflet` has a single CSS node with name `leaflet`. The node will get the
+ * `BisAlbum` has a single CSS node with name `album`. The node will get the
  * style classes `.folded` when it is folded, `.unfolded` when it's not, or none
  * if it hasn't computed its fold yet.
  *
@@ -58,18 +58,18 @@
  */
 
 /**
- * BisLeafletPage:
+ * BisAlbumPage:
  *
- * An auxiliary class used by [class@Leaflet].
+ * An auxiliary class used by [class@Album].
  */
 
 /**
- * BisLeafletTransitionType:
- * @BIS_LEAFLET_TRANSITION_TYPE_OVER: Cover the old page or uncover the new page, sliding from or towards the end according to orientation, text direction and children order
- * @BIS_LEAFLET_TRANSITION_TYPE_UNDER: Uncover the new page or cover the old page, sliding from or towards the start according to orientation, text direction and children order
- * @BIS_LEAFLET_TRANSITION_TYPE_SLIDE: Slide from left, right, up or down according to the orientation, text direction and the children order
+ * BisAlbumTransitionType:
+ * @BIS_ALBUM_TRANSITION_TYPE_OVER: Cover the old page or uncover the new page, sliding from or towards the end according to orientation, text direction and children order
+ * @BIS_ALBUM_TRANSITION_TYPE_UNDER: Uncover the new page or cover the old page, sliding from or towards the start according to orientation, text direction and children order
+ * @BIS_ALBUM_TRANSITION_TYPE_SLIDE: Slide from left, right, up or down according to the orientation, text direction and the children order
  *
- * Describes the possible transitions in a [class@Leaflet] widget.
+ * Describes the possible transitions in a [class@Album] widget.
  *
  * New values may be added to this enumeration over time.
  *
@@ -103,7 +103,7 @@ enum {
 #define GTK_ORIENTATION_MAX 2
 #define BIS_SWIPE_BORDER 32
 
-struct _BisLeafletPage {
+struct _BisAlbumPage {
   GObject parent_instance;
 
   GtkWidget *widget;
@@ -118,7 +118,7 @@ struct _BisLeafletPage {
   GtkWidget *last_focus;
 };
 
-G_DEFINE_FINAL_TYPE (BisLeafletPage, bis_leaflet_page, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE (BisAlbumPage, bis_album_page, G_TYPE_OBJECT)
 
 enum {
   PAGE_PROP_0,
@@ -130,7 +130,7 @@ enum {
 
 static GParamSpec *page_props[LAST_PAGE_PROP];
 
-struct _BisLeaflet {
+struct _BisAlbum {
   GtkWidget parent_instance;
 
   GList *children;
@@ -139,8 +139,8 @@ struct _BisLeaflet {
    * draw children for RTL languages on a horizontal widget.
    */
   GList *children_reversed;
-  BisLeafletPage *visible_child;
-  BisLeafletPage *last_visible_child;
+  BisAlbumPage *visible_child;
+  BisAlbumPage *last_visible_child;
 
   gboolean folded;
   BisFoldThresholdPolicy fold_threshold_policy;
@@ -149,7 +149,7 @@ struct _BisLeaflet {
 
   GtkOrientation orientation;
 
-  BisLeafletTransitionType transition_type;
+  BisAlbumTransitionType transition_type;
 
   BisSwipeTracker *tracker;
 
@@ -192,33 +192,33 @@ struct _BisLeaflet {
 
 static GParamSpec *props[LAST_PROP];
 
-static void bis_leaflet_buildable_init (GtkBuildableIface *iface);
-static void bis_leaflet_swipeable_init (BisSwipeableInterface *iface);
+static void bis_album_buildable_init (GtkBuildableIface *iface);
+static void bis_album_swipeable_init (BisSwipeableInterface *iface);
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (BisLeaflet, bis_leaflet, GTK_TYPE_WIDGET,
+G_DEFINE_FINAL_TYPE_WITH_CODE (BisAlbum, bis_album, GTK_TYPE_WIDGET,
                                G_IMPLEMENT_INTERFACE (GTK_TYPE_ORIENTABLE, NULL)
-                               G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, bis_leaflet_buildable_init)
-                               G_IMPLEMENT_INTERFACE (BIS_TYPE_SWIPEABLE, bis_leaflet_swipeable_init))
+                               G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, bis_album_buildable_init)
+                               G_IMPLEMENT_INTERFACE (BIS_TYPE_SWIPEABLE, bis_album_swipeable_init))
 
 static GtkBuildableIface *parent_buildable_iface;
 
 static void
-bis_leaflet_page_get_property (GObject    *object,
+bis_album_page_get_property (GObject    *object,
                                guint       property_id,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  BisLeafletPage *self = BIS_LEAFLET_PAGE (object);
+  BisAlbumPage *self = BIS_ALBUM_PAGE (object);
 
   switch (property_id) {
   case PAGE_PROP_CHILD:
-    g_value_set_object (value, bis_leaflet_page_get_child (self));
+    g_value_set_object (value, bis_album_page_get_child (self));
     break;
   case PAGE_PROP_NAME:
-    g_value_set_string (value, bis_leaflet_page_get_name (self));
+    g_value_set_string (value, bis_album_page_get_name (self));
     break;
   case PAGE_PROP_NAVIGATABLE:
-    g_value_set_boolean (value, bis_leaflet_page_get_navigatable (self));
+    g_value_set_boolean (value, bis_album_page_get_navigatable (self));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -227,22 +227,22 @@ bis_leaflet_page_get_property (GObject    *object,
 }
 
 static void
-bis_leaflet_page_set_property (GObject      *object,
+bis_album_page_set_property (GObject      *object,
                                guint         property_id,
                                const GValue *value,
                                GParamSpec   *pspec)
 {
-  BisLeafletPage *self = BIS_LEAFLET_PAGE (object);
+  BisAlbumPage *self = BIS_ALBUM_PAGE (object);
 
   switch (property_id) {
   case PAGE_PROP_CHILD:
     g_set_object (&self->widget, g_value_get_object (value));
     break;
   case PAGE_PROP_NAME:
-    bis_leaflet_page_set_name (self, g_value_get_string (value));
+    bis_album_page_set_name (self, g_value_get_string (value));
     break;
   case PAGE_PROP_NAVIGATABLE:
-    bis_leaflet_page_set_navigatable (self, g_value_get_boolean (value));
+    bis_album_page_set_navigatable (self, g_value_get_boolean (value));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -251,9 +251,9 @@ bis_leaflet_page_set_property (GObject      *object,
 }
 
 static void
-bis_leaflet_page_finalize (GObject *object)
+bis_album_page_finalize (GObject *object)
 {
-  BisLeafletPage *self = BIS_LEAFLET_PAGE (object);
+  BisAlbumPage *self = BIS_ALBUM_PAGE (object);
 
   g_clear_object (&self->widget);
   g_clear_pointer (&self->name, g_free);
@@ -262,22 +262,22 @@ bis_leaflet_page_finalize (GObject *object)
     g_object_remove_weak_pointer (G_OBJECT (self->last_focus),
                                   (gpointer *) &self->last_focus);
 
-  G_OBJECT_CLASS (bis_leaflet_page_parent_class)->finalize (object);
+  G_OBJECT_CLASS (bis_album_page_parent_class)->finalize (object);
 }
 
 static void
-bis_leaflet_page_class_init (BisLeafletPageClass *klass)
+bis_album_page_class_init (BisAlbumPageClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->get_property = bis_leaflet_page_get_property;
-  object_class->set_property = bis_leaflet_page_set_property;
-  object_class->finalize = bis_leaflet_page_finalize;
+  object_class->get_property = bis_album_page_get_property;
+  object_class->set_property = bis_album_page_set_property;
+  object_class->finalize = bis_album_page_finalize;
 
   /**
-   * BisLeafletPage:child: (attributes org.gtk.Property.get=bis_leaflet_page_get_child)
+   * BisAlbumPage:child: (attributes org.gtk.Property.get=bis_album_page_get_child)
    *
-   * The leaflet child to which the page belongs.
+   * The album child to which the page belongs.
    *
    * Since: 1.0
    */
@@ -287,7 +287,7 @@ bis_leaflet_page_class_init (BisLeafletPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisLeafletPage:name: (attributes org.gtk.Property.get=bis_leaflet_page_get_name org.gtk.Property.set=bis_leaflet_page_set_name)
+   * BisAlbumPage:name: (attributes org.gtk.Property.get=bis_album_page_get_name org.gtk.Property.set=bis_album_page_set_name)
    *
    * The name of the child page.
    *
@@ -299,12 +299,12 @@ bis_leaflet_page_class_init (BisLeafletPageClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeafletPage:navigatable: (attributes org.gtk.Property.get=bis_leaflet_page_get_navigatable org.gtk.Property.set=bis_leaflet_page_set_navigatable)
+   * BisAlbumPage:navigatable: (attributes org.gtk.Property.get=bis_album_page_get_navigatable org.gtk.Property.set=bis_album_page_set_navigatable)
    *
    * Whether the child can be navigated to when folded.
    *
    * If `FALSE`, the child will be ignored by
-   * [method@Leaflet.get_adjacent_child], [method@Leaflet.navigate], and swipe
+   * [method@Album.get_adjacent_child], [method@Album.navigate], and swipe
    * gestures.
    *
    * This can be used used to prevent switching to widgets like separators.
@@ -320,43 +320,43 @@ bis_leaflet_page_class_init (BisLeafletPageClass *klass)
 }
 
 static void
-bis_leaflet_page_init (BisLeafletPage *self)
+bis_album_page_init (BisAlbumPage *self)
 {
   self->navigatable = TRUE;
 }
 
-#define BIS_TYPE_LEAFLET_PAGES (bis_leaflet_pages_get_type ())
+#define BIS_TYPE_ALBUM_PAGES (bis_album_pages_get_type ())
 
-G_DECLARE_FINAL_TYPE (BisLeafletPages, bis_leaflet_pages, BIS, LEAFLET_PAGES, GObject)
+G_DECLARE_FINAL_TYPE (BisAlbumPages, bis_album_pages, BIS, ALBUM_PAGES, GObject)
 
-struct _BisLeafletPages
+struct _BisAlbumPages
 {
   GObject parent_instance;
-  BisLeaflet *leaflet;
+  BisAlbum *album;
 };
 
 static GType
-bis_leaflet_pages_get_item_type (GListModel *model)
+bis_album_pages_get_item_type (GListModel *model)
 {
-  return BIS_TYPE_LEAFLET_PAGE;
+  return BIS_TYPE_ALBUM_PAGE;
 }
 
 static guint
-bis_leaflet_pages_get_n_items (GListModel *model)
+bis_album_pages_get_n_items (GListModel *model)
 {
-  BisLeafletPages *self = BIS_LEAFLET_PAGES (model);
+  BisAlbumPages *self = BIS_ALBUM_PAGES (model);
 
-  return g_list_length (self->leaflet->children);
+  return g_list_length (self->album->children);
 }
 
 static gpointer
-bis_leaflet_pages_get_item (GListModel *model,
+bis_album_pages_get_item (GListModel *model,
                             guint       position)
 {
-  BisLeafletPages *self = BIS_LEAFLET_PAGES (model);
-  BisLeafletPage *page;
+  BisAlbumPages *self = BIS_ALBUM_PAGES (model);
+  BisAlbumPage *page;
 
-  page = g_list_nth_data (self->leaflet->children, position);
+  page = g_list_nth_data (self->album->children, position);
 
   if (!page)
     return NULL;
@@ -365,74 +365,74 @@ bis_leaflet_pages_get_item (GListModel *model,
 }
 
 static void
-bis_leaflet_pages_list_model_init (GListModelInterface *iface)
+bis_album_pages_list_model_init (GListModelInterface *iface)
 {
-  iface->get_item_type = bis_leaflet_pages_get_item_type;
-  iface->get_n_items = bis_leaflet_pages_get_n_items;
-  iface->get_item = bis_leaflet_pages_get_item;
+  iface->get_item_type = bis_album_pages_get_item_type;
+  iface->get_n_items = bis_album_pages_get_n_items;
+  iface->get_item = bis_album_pages_get_item;
 }
 
 static gboolean
-bis_leaflet_pages_is_selected (GtkSelectionModel *model,
+bis_album_pages_is_selected (GtkSelectionModel *model,
                                guint              position)
 {
-  BisLeafletPages *self = BIS_LEAFLET_PAGES (model);
-  BisLeafletPage *page;
+  BisAlbumPages *self = BIS_ALBUM_PAGES (model);
+  BisAlbumPage *page;
 
-  page = g_list_nth_data (self->leaflet->children, position);
+  page = g_list_nth_data (self->album->children, position);
 
-  return page && page == self->leaflet->visible_child;
+  return page && page == self->album->visible_child;
 }
 
 static gboolean
-bis_leaflet_pages_select_item (GtkSelectionModel *model,
+bis_album_pages_select_item (GtkSelectionModel *model,
                                guint              position,
                                gboolean           exclusive)
 {
-  BisLeafletPages *self = BIS_LEAFLET_PAGES (model);
-  BisLeafletPage *page;
+  BisAlbumPages *self = BIS_ALBUM_PAGES (model);
+  BisAlbumPage *page;
 
-  page = g_list_nth_data (self->leaflet->children, position);
+  page = g_list_nth_data (self->album->children, position);
 
-  bis_leaflet_set_visible_child (self->leaflet, page->widget);
+  bis_album_set_visible_child (self->album, page->widget);
 
   return TRUE;
 }
 
 static void
-bis_leaflet_pages_selection_model_init (GtkSelectionModelInterface *iface)
+bis_album_pages_selection_model_init (GtkSelectionModelInterface *iface)
 {
-  iface->is_selected = bis_leaflet_pages_is_selected;
-  iface->select_item = bis_leaflet_pages_select_item;
+  iface->is_selected = bis_album_pages_is_selected;
+  iface->select_item = bis_album_pages_select_item;
 }
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (BisLeafletPages, bis_leaflet_pages, G_TYPE_OBJECT,
-                               G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, bis_leaflet_pages_list_model_init)
-                               G_IMPLEMENT_INTERFACE (GTK_TYPE_SELECTION_MODEL, bis_leaflet_pages_selection_model_init))
+G_DEFINE_FINAL_TYPE_WITH_CODE (BisAlbumPages, bis_album_pages, G_TYPE_OBJECT,
+                               G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, bis_album_pages_list_model_init)
+                               G_IMPLEMENT_INTERFACE (GTK_TYPE_SELECTION_MODEL, bis_album_pages_selection_model_init))
 
 static void
-bis_leaflet_pages_init (BisLeafletPages *pages)
+bis_album_pages_init (BisAlbumPages *pages)
 {
 }
 
 static void
-bis_leaflet_pages_class_init (BisLeafletPagesClass *klass)
+bis_album_pages_class_init (BisAlbumPagesClass *klass)
 {
 }
 
-static BisLeafletPages *
-bis_leaflet_pages_new (BisLeaflet *leaflet)
+static BisAlbumPages *
+bis_album_pages_new (BisAlbum *album)
 {
-  BisLeafletPages *pages;
+  BisAlbumPages *pages;
 
-  pages = g_object_new (BIS_TYPE_LEAFLET_PAGES, NULL);
-  pages->leaflet = leaflet;
+  pages = g_object_new (BIS_TYPE_ALBUM_PAGES, NULL);
+  pages->album = album;
 
   return pages;
 }
 
 static inline BisNavigationDirection
-adjust_direction_for_rtl (BisLeaflet             *self,
+adjust_direction_for_rtl (BisAlbum             *self,
                           BisNavigationDirection  direction)
 {
   if (self->orientation == GTK_ORIENTATION_HORIZONTAL &&
@@ -446,11 +446,11 @@ adjust_direction_for_rtl (BisLeaflet             *self,
   return direction;
 }
 
-static BisLeafletPage *
-find_page_for_widget (BisLeaflet *self,
+static BisAlbumPage *
+find_page_for_widget (BisAlbum *self,
                       GtkWidget  *widget)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
   GList *l;
 
   for (l = self->children; l; l = l->next) {
@@ -463,11 +463,11 @@ find_page_for_widget (BisLeaflet *self,
   return NULL;
 }
 
-static BisLeafletPage *
-find_page_for_name (BisLeaflet *self,
+static BisAlbumPage *
+find_page_for_name (BisAlbum *self,
                     const char *name)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
   GList *l;
 
   for (l = self->children; l; l = l->next) {
@@ -480,11 +480,11 @@ find_page_for_name (BisLeaflet *self,
   return NULL;
 }
 
-static BisLeafletPage *
-find_swipeable_page (BisLeaflet             *self,
+static BisAlbumPage *
+find_swipeable_page (BisAlbum             *self,
                      BisNavigationDirection  direction)
 {
-  BisLeafletPage *page = NULL;
+  BisAlbumPage *page = NULL;
   GList *l;
 
   l = g_list_find (self->children, self->visible_child);
@@ -505,7 +505,7 @@ find_swipeable_page (BisLeaflet             *self,
 }
 
 static GList *
-get_directed_children (BisLeaflet *self)
+get_directed_children (BisAlbum *self)
 {
   return self->orientation == GTK_ORIENTATION_HORIZONTAL &&
          gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL ?
@@ -513,7 +513,7 @@ get_directed_children (BisLeaflet *self)
 }
 
 static GtkPanDirection
-get_pan_direction (BisLeaflet *self,
+get_pan_direction (BisAlbum *self,
                    gboolean    new_child_first)
 {
   if (self->orientation == GTK_ORIENTATION_HORIZONTAL) {
@@ -527,8 +527,8 @@ get_pan_direction (BisLeaflet *self,
 }
 
 static int
-get_child_window_x (BisLeaflet     *self,
-                    BisLeafletPage *page,
+get_child_window_x (BisAlbum     *self,
+                    BisAlbumPage *page,
                     int             width)
 {
   gboolean is_rtl;
@@ -545,23 +545,23 @@ get_child_window_x (BisLeaflet     *self,
   rtl_multiplier = is_rtl ? -1 : 1;
 
   if ((self->child_transition.active_direction == GTK_PAN_DIRECTION_RIGHT) == is_rtl) {
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->visible_child)
       return width * (1 - self->child_transition.progress) * rtl_multiplier;
 
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->last_visible_child)
       return -width * self->child_transition.progress * rtl_multiplier;
   } else {
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->visible_child)
       return -width * (1 - self->child_transition.progress) * rtl_multiplier;
 
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->last_visible_child)
       return width * self->child_transition.progress * rtl_multiplier;
   }
@@ -570,8 +570,8 @@ get_child_window_x (BisLeaflet     *self,
 }
 
 static int
-get_child_window_y (BisLeaflet     *self,
-                    BisLeafletPage *page,
+get_child_window_y (BisAlbum     *self,
+                    BisAlbumPage *page,
                     int             height)
 {
   if (!self->child_transition.transition_running)
@@ -582,23 +582,23 @@ get_child_window_y (BisLeaflet     *self,
     return 0;
 
   if (self->child_transition.active_direction == GTK_PAN_DIRECTION_UP) {
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->visible_child)
       return height * (1 - self->child_transition.progress);
 
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->last_visible_child)
       return -height * self->child_transition.progress;
   } else {
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->visible_child)
       return -height * (1 - self->child_transition.progress);
 
-    if ((self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER ||
-         self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE) &&
+    if ((self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER ||
+         self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE) &&
         page == self->last_visible_child)
       return height * self->child_transition.progress;
   }
@@ -607,7 +607,7 @@ get_child_window_y (BisLeaflet     *self,
 }
 
 static void
-set_child_transition_running (BisLeaflet *self,
+set_child_transition_running (BisAlbum *self,
                               gboolean    running)
 {
   if (self->child_transition.transition_running == running)
@@ -619,7 +619,7 @@ set_child_transition_running (BisLeaflet *self,
 
 static void
 child_transition_cb (double      value,
-                     BisLeaflet *self)
+                     BisAlbum *self)
 {
   self->child_transition.progress = value;
 
@@ -630,7 +630,7 @@ child_transition_cb (double      value,
 }
 
 static void
-child_transition_done_cb (BisLeaflet *self)
+child_transition_done_cb (BisAlbum *self)
 {
   if (self->child_transition.is_cancelled) {
     if (self->last_visible_child != NULL) {
@@ -664,8 +664,8 @@ child_transition_done_cb (BisLeaflet *self)
 }
 
 static void
-set_visible_child (BisLeaflet     *self,
-                   BisLeafletPage *page)
+set_visible_child (BisAlbum     *self,
+                   BisAlbumPage *page)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GtkRoot *root;
@@ -687,7 +687,7 @@ set_visible_child (BisLeaflet     *self,
     GList *l;
 
     for (l = self->children; l; l = l->next) {
-      BisLeafletPage *p = l->data;
+      BisAlbumPage *p = l->data;
 
       if (gtk_widget_get_visible (p->widget)) {
         page = p;
@@ -705,7 +705,7 @@ set_visible_child (BisLeaflet     *self,
     GList *l;
 
     for (l = self->children, position = 0; l; l = l->next, position++) {
-      BisLeafletPage *p = l->data;
+      BisAlbumPage *p = l->data;
       if (p == self->visible_child)
         old_pos = position;
       else if (p == page)
@@ -823,7 +823,7 @@ set_visible_child (BisLeaflet     *self,
 
 static void
 mode_transition_cb (double      value,
-                    BisLeaflet *self)
+                    BisAlbum *self)
 {
   self->mode_transition.current_pos = value;
 
@@ -834,7 +834,7 @@ mode_transition_cb (double      value,
 }
 
 static void
-start_mode_transition (BisLeaflet *self,
+start_mode_transition (BisAlbum *self,
                        double      target)
 {
   if (bis_timed_animation_get_value_to (BIS_TIMED_ANIMATION (self->mode_transition.animation)) == target)
@@ -854,7 +854,7 @@ start_mode_transition (BisLeaflet *self,
 }
 
 static void
-set_folded (BisLeaflet *self,
+set_folded (BisAlbum *self,
             gboolean    folded)
 {
   if (self->folded == folded)
@@ -877,8 +877,8 @@ set_folded (BisLeaflet *self,
 }
 
 static inline int
-get_page_size (BisLeaflet     *self,
-               BisLeafletPage *page,
+get_page_size (BisAlbum     *self,
+               BisAlbumPage *page,
                GtkOrientation  orientation)
 {
   GtkRequisition *req;
@@ -892,19 +892,19 @@ get_page_size (BisLeaflet     *self,
 }
 
 static void
-bis_leaflet_size_allocate_folded (BisLeaflet *self,
+bis_album_size_allocate_folded (BisAlbum *self,
                                   int         width,
                                   int         height)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GtkOrientation orientation = gtk_orientable_get_orientation (GTK_ORIENTABLE (widget));
   GList *directed_children, *children;
-  BisLeafletPage *page, *visible_child;
+  BisAlbumPage *page, *visible_child;
   int start_size, end_size, visible_size;
   int remaining_start_size, remaining_end_size, remaining_size;
   int current_pad;
   int start_position, end_position;
-  BisLeafletTransitionType mode_transition_type;
+  BisAlbumTransitionType mode_transition_type;
   GtkTextDirection direction;
   gboolean under;
 
@@ -1007,20 +1007,20 @@ bis_leaflet_size_allocate_folded (BisLeaflet *self,
   switch (orientation) {
   case GTK_ORIENTATION_HORIZONTAL:
     direction = gtk_widget_get_direction (GTK_WIDGET (self));
-    under = (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_LTR) ||
-            (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_RTL);
+    under = (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_LTR) ||
+            (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_RTL);
     start_position = under ? 0 : remaining_start_size - start_size;
     self->mode_transition.start_progress = under ? (double) remaining_size / start_size : 1;
-    under = (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_LTR) ||
-            (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_RTL);
+    under = (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_LTR) ||
+            (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_RTL);
     end_position = under ? width - end_size : remaining_start_size + visible_size;
     self->mode_transition.end_progress = under ? (double) remaining_end_size / end_size : 1;
     break;
   case GTK_ORIENTATION_VERTICAL:
-    under = mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER;
+    under = mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER;
     start_position = under ? 0 : remaining_start_size - start_size;
     self->mode_transition.start_progress = under ? (double) remaining_size / start_size : 1;
-    under = mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER;
+    under = mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER;
     end_position = remaining_start_size + visible_size;
     self->mode_transition.end_progress = under ? (double) remaining_end_size / end_size : 1;
     break;
@@ -1104,20 +1104,20 @@ bis_leaflet_size_allocate_folded (BisLeaflet *self,
 }
 
 static void
-bis_leaflet_size_allocate_unfolded (BisLeaflet *self,
+bis_album_size_allocate_unfolded (BisAlbum *self,
                                     int         width,
                                     int         height)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GtkOrientation orientation = gtk_orientable_get_orientation (GTK_ORIENTABLE (widget));
   GList *directed_children, *children;
-  BisLeafletPage *page, *visible_child;
+  BisAlbumPage *page, *visible_child;
   int min_size, extra_size;
   int per_child_extra = 0, n_extra_widgets = 0;
   int n_visible_children, n_expand_children;
   int start_pad = 0, end_pad = 0;
   int i = 0, position = 0;
-  BisLeafletTransitionType mode_transition_type;
+  BisAlbumTransitionType mode_transition_type;
   GtkTextDirection direction;
   gboolean under;
   GtkRequestedSize *sizes;
@@ -1249,10 +1249,10 @@ bis_leaflet_size_allocate_unfolded (BisLeaflet *self,
   direction = gtk_widget_get_direction (GTK_WIDGET (self));
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
-    under = (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_LTR) ||
-            (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_RTL);
+    under = (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_LTR) ||
+            (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_RTL);
   else
-    under = mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER;
+    under = mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER;
   for (children = directed_children; children; children = children->next) {
     page = children->data;
 
@@ -1274,10 +1274,10 @@ bis_leaflet_size_allocate_unfolded (BisLeaflet *self,
   self->mode_transition.start_progress = under ? self->mode_transition.current_pos : 1;
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
-    under = (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_LTR) ||
-            (mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_RTL);
+    under = (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER && direction == GTK_TEXT_DIR_LTR) ||
+            (mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER && direction == GTK_TEXT_DIR_RTL);
   else
-    under = mode_transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER;
+    under = mode_transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER;
   for (children = g_list_last (directed_children); children; children = children->prev) {
     page = children->data;
 
@@ -1308,8 +1308,8 @@ bis_leaflet_size_allocate_unfolded (BisLeaflet *self,
   }
 }
 
-static BisLeafletPage *
-get_top_overlap_child (BisLeaflet *self)
+static BisAlbumPage *
+get_top_overlap_child (BisAlbum *self)
 {
   gboolean is_rtl, start;
 
@@ -1323,12 +1323,12 @@ get_top_overlap_child (BisLeaflet *self)
            self->child_transition.active_direction == GTK_PAN_DIRECTION_UP;
 
   switch (self->transition_type) {
-  case BIS_LEAFLET_TRANSITION_TYPE_SLIDE:
+  case BIS_ALBUM_TRANSITION_TYPE_SLIDE:
     /* Nothing overlaps in this case */
     return NULL;
-  case BIS_LEAFLET_TRANSITION_TYPE_OVER:
+  case BIS_ALBUM_TRANSITION_TYPE_OVER:
     return start ? self->visible_child : self->last_visible_child;
-  case BIS_LEAFLET_TRANSITION_TYPE_UNDER:
+  case BIS_ALBUM_TRANSITION_TYPE_UNDER:
     return start ? self->last_visible_child : self->visible_child;
   default:
     g_assert_not_reached ();
@@ -1336,7 +1336,7 @@ get_top_overlap_child (BisLeaflet *self)
 }
 
 static void
-update_tracker_orientation (BisLeaflet *self)
+update_tracker_orientation (BisAlbum *self)
 {
   gboolean reverse;
 
@@ -1350,8 +1350,8 @@ update_tracker_orientation (BisLeaflet *self)
 }
 
 static void
-update_child_visible (BisLeaflet     *self,
-                      BisLeafletPage *page)
+update_child_visible (BisAlbum     *self,
+                      BisAlbumPage *page)
 {
   gboolean enabled;
 
@@ -1369,13 +1369,13 @@ update_child_visible (BisLeaflet     *self,
 }
 
 static void
-leaflet_child_visibility_notify_cb (GObject    *obj,
+album_child_visibility_notify_cb (GObject    *obj,
                                     GParamSpec *pspec,
                                     gpointer    user_data)
 {
-  BisLeaflet *self = BIS_LEAFLET (user_data);
+  BisAlbum *self = BIS_ALBUM (user_data);
   GtkWidget *child = GTK_WIDGET (obj);
-  BisLeafletPage *page;
+  BisAlbumPage *page;
 
   page = find_page_for_widget (self, child);
   g_return_if_fail (page != NULL);
@@ -1384,7 +1384,7 @@ leaflet_child_visibility_notify_cb (GObject    *obj,
 }
 
 static gboolean
-can_navigate_in_direction (BisLeaflet             *self,
+can_navigate_in_direction (BisAlbum             *self,
                            BisNavigationDirection  direction)
 {
   switch (direction) {
@@ -1398,7 +1398,7 @@ can_navigate_in_direction (BisLeaflet             *self,
 }
 
 static void
-set_orientation (BisLeaflet     *self,
+set_orientation (BisAlbum     *self,
                  GtkOrientation  orientation)
 {
   if (self->orientation == orientation)
@@ -1415,7 +1415,7 @@ back_forward_button_pressed_cb (GtkGesture *gesture,
                                 int         n_press,
                                 double      x,
                                 double      y,
-                                BisLeaflet *self)
+                                BisAlbum *self)
 {
   guint button;
   BisNavigationDirection direction;
@@ -1440,7 +1440,7 @@ back_forward_button_pressed_cb (GtkGesture *gesture,
   direction = adjust_direction_for_rtl (self, direction);
 
   if (can_navigate_in_direction (self, direction) &&
-      bis_leaflet_navigate (self, direction)) {
+      bis_album_navigate (self, direction)) {
     gtk_gesture_set_state (gesture, GTK_EVENT_SEQUENCE_CLAIMED);
     return;
   }
@@ -1451,7 +1451,7 @@ back_forward_button_pressed_cb (GtkGesture *gesture,
 static void
 prepare_cb (BisSwipeTracker        *tracker,
             BisNavigationDirection  direction,
-            BisLeaflet             *self)
+            BisAlbum             *self)
 {
   self->child_transition.swipe_direction = direction;
 
@@ -1460,7 +1460,7 @@ prepare_cb (BisSwipeTracker        *tracker,
     self->child_transition.is_gesture_active = TRUE;
     self->child_transition.is_cancelled = FALSE;
   } else {
-    BisLeafletPage *page = NULL;
+    BisAlbumPage *page = NULL;
 
     if (can_navigate_in_direction (self, direction) && self->folded)
       page = find_swipeable_page (self, direction);
@@ -1479,7 +1479,7 @@ prepare_cb (BisSwipeTracker        *tracker,
 static void
 update_swipe_cb (BisSwipeTracker *tracker,
                  double           progress,
-                 BisLeaflet      *self)
+                 BisAlbum      *self)
 {
   child_transition_cb (ABS (progress), self);
 }
@@ -1488,7 +1488,7 @@ static void
 end_swipe_cb (BisSwipeTracker *tracker,
               double           velocity,
               double           to,
-              BisLeaflet      *self)
+              BisAlbum      *self)
 {
  if (!self->child_transition.is_gesture_active)
     return;
@@ -1514,9 +1514,9 @@ end_swipe_cb (BisSwipeTracker *tracker,
 }
 
 static void
-add_page (BisLeaflet     *self,
-          BisLeafletPage *page,
-          BisLeafletPage *sibling_page)
+add_page (BisAlbum     *self,
+          BisAlbumPage *page,
+          BisAlbumPage *sibling_page)
 {
   GList *l;
 
@@ -1524,10 +1524,10 @@ add_page (BisLeaflet     *self,
 
   if (page->name) {
     for (l = self->children; l; l = l->next) {
-      BisLeafletPage *p = l->data;
+      BisAlbumPage *p = l->data;
 
       if (p->name && !g_strcmp0 (p->name, page->name)) {
-        g_warning ("While adding page: duplicate child name in BisLeaflet: %s", page->name);
+        g_warning ("While adding page: duplicate child name in BisAlbum: %s", page->name);
         break;
       }
     }
@@ -1550,7 +1550,7 @@ add_page (BisLeaflet     *self,
 
   gtk_widget_set_child_visible (page->widget, FALSE);
 
-  if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER)
+  if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER)
     gtk_widget_insert_before (page->widget, GTK_WIDGET (self),
                               sibling_page ? sibling_page->widget : NULL);
   else
@@ -1564,7 +1564,7 @@ add_page (BisLeaflet     *self,
   }
 
   g_signal_connect (page->widget, "notify::visible",
-                    G_CALLBACK (leaflet_child_visibility_notify_cb), self);
+                    G_CALLBACK (album_child_visibility_notify_cb), self);
 
   if (self->visible_child == NULL &&
       gtk_widget_get_visible (page->widget))
@@ -1576,11 +1576,11 @@ add_page (BisLeaflet     *self,
 }
 
 static void
-leaflet_remove (BisLeaflet *self,
+album_remove (BisAlbum *self,
                 GtkWidget  *child,
                 gboolean    in_dispose)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
   gboolean was_visible;
 
   page = find_page_for_widget (self, child);
@@ -1591,7 +1591,7 @@ leaflet_remove (BisLeaflet *self,
   self->children_reversed = g_list_remove (self->children_reversed, page);
 
   g_signal_handlers_disconnect_by_func (child,
-                                        leaflet_child_visibility_notify_cb,
+                                        album_child_visibility_notify_cb,
                                         self);
 
   was_visible = gtk_widget_get_visible (child);
@@ -1618,7 +1618,7 @@ leaflet_remove (BisLeaflet *self,
 }
 
 static gboolean
-back_forward_shortcut_cb (BisLeaflet *self,
+back_forward_shortcut_cb (BisAlbum *self,
                           GVariant   *args)
 {
   BisNavigationDirection direction;
@@ -1628,11 +1628,11 @@ back_forward_shortcut_cb (BisLeaflet *self,
   direction = adjust_direction_for_rtl (self, direction);
 
   return can_navigate_in_direction (self, direction) &&
-         bis_leaflet_navigate (self, direction);
+         bis_album_navigate (self, direction);
 }
 
 static gboolean
-alt_arrows_shortcut_cb (BisLeaflet *self,
+alt_arrows_shortcut_cb (BisAlbum *self,
                         GVariant   *args)
 {
   BisNavigationDirection direction;
@@ -1645,11 +1645,11 @@ alt_arrows_shortcut_cb (BisLeaflet *self,
   direction = adjust_direction_for_rtl (self, direction);
 
   return can_navigate_in_direction (self, direction) &&
-         bis_leaflet_navigate (self, direction);
+         bis_album_navigate (self, direction);
 }
 
 static void
-bis_leaflet_measure (GtkWidget      *widget,
+bis_album_measure (GtkWidget      *widget,
                      GtkOrientation  orientation,
                      int             for_size,
                      int            *minimum,
@@ -1657,7 +1657,7 @@ bis_leaflet_measure (GtkWidget      *widget,
                      int            *minimum_baseline,
                      int            *natural_baseline)
 {
-  BisLeaflet *self = BIS_LEAFLET (widget);
+  BisAlbum *self = BIS_ALBUM (widget);
   GList *l;
   int visible_children;
   int child_min, max_min, visible_min, last_visible_min;
@@ -1668,7 +1668,7 @@ bis_leaflet_measure (GtkWidget      *widget,
   child_min = max_min = visible_min = last_visible_min = 0;
   child_nat = max_nat = sum_nat = 0;
   for (l = self->children; l; l = l->next) {
-    BisLeafletPage *page = l->data;
+    BisAlbumPage *page = l->data;
 
     if (page->widget == NULL || !gtk_widget_get_visible (page->widget))
       continue;
@@ -1719,12 +1719,12 @@ bis_leaflet_measure (GtkWidget      *widget,
 }
 
 static void
-allocate_shadow (BisLeaflet *self,
+allocate_shadow (BisAlbum *self,
                  int         width,
                  int         height,
                  int         baseline)
 {
-  BisLeafletPage *overlap_child;
+  BisAlbumPage *overlap_child;
   gboolean is_transition;
   gboolean is_vertical;
   gboolean is_rtl;
@@ -1745,7 +1745,7 @@ allocate_shadow (BisLeaflet *self,
 
   is_vertical = gtk_orientable_get_orientation (GTK_ORIENTABLE (self)) == GTK_ORIENTATION_VERTICAL;
   is_rtl = gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL;
-  is_over = self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER;
+  is_over = self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER;
 
   if (is_vertical) {
     if (!is_over)
@@ -1760,7 +1760,7 @@ allocate_shadow (BisLeaflet *self,
   }
 
   if (!is_transition ||
-      self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE ||
+      self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE ||
       !overlap_child) {
     shadow_progress = 1;
   } else {
@@ -1815,12 +1815,12 @@ allocate_shadow (BisLeaflet *self,
 }
 
 static void
-bis_leaflet_size_allocate (GtkWidget *widget,
+bis_album_size_allocate (GtkWidget *widget,
                            int        width,
                            int        height,
                            int        baseline)
 {
-  BisLeaflet *self = BIS_LEAFLET (widget);
+  BisAlbum *self = BIS_ALBUM (widget);
   GtkOrientation orientation = gtk_orientable_get_orientation (GTK_ORIENTABLE (widget));
   GList *directed_children, *children;
   gboolean folded;
@@ -1829,7 +1829,7 @@ bis_leaflet_size_allocate (GtkWidget *widget,
 
   /* Prepare children information. */
   for (children = directed_children; children; children = children->next) {
-    BisLeafletPage *page = children->data;
+    BisAlbumPage *page = children->data;
 
     gtk_widget_get_preferred_size (page->widget, &page->min, &page->nat);
     page->alloc.x = page->alloc.y = page->alloc.width = page->alloc.height = 0;
@@ -1843,7 +1843,7 @@ bis_leaflet_size_allocate (GtkWidget *widget,
     if (orientation == GTK_ORIENTATION_HORIZONTAL) {
 
       for (children = directed_children; children; children = children->next) {
-        BisLeafletPage *page = children->data;
+        BisAlbumPage *page = children->data;
 
         /* FIXME Check the child is visible. */
         if (!page->widget)
@@ -1866,7 +1866,7 @@ bis_leaflet_size_allocate (GtkWidget *widget,
     }
     else {
       for (children = directed_children; children; children = children->next) {
-        BisLeafletPage *page = children->data;
+        BisAlbumPage *page = children->data;
 
         /* FIXME Check the child is visible. */
         if (!page->widget)
@@ -1895,13 +1895,13 @@ bis_leaflet_size_allocate (GtkWidget *widget,
 
   /* Allocate size to the children. */
   if (folded)
-    bis_leaflet_size_allocate_folded (self, width, height);
+    bis_album_size_allocate_folded (self, width, height);
   else
-    bis_leaflet_size_allocate_unfolded (self, width, height);
+    bis_album_size_allocate_unfolded (self, width, height);
 
   /* Apply visibility and allocation. */
   for (children = directed_children; children; children = children->next) {
-    BisLeafletPage *page = children->data;
+    BisAlbumPage *page = children->data;
 
     gtk_widget_set_child_visible (page->widget, page->visible);
 
@@ -1918,12 +1918,12 @@ bis_leaflet_size_allocate (GtkWidget *widget,
 }
 
 static void
-bis_leaflet_snapshot (GtkWidget   *widget,
+bis_album_snapshot (GtkWidget   *widget,
                       GtkSnapshot *snapshot)
 {
-  BisLeaflet *self = BIS_LEAFLET (widget);
+  BisAlbum *self = BIS_ALBUM (widget);
   GList *stacked_children, *l;
-  BisLeafletPage *overlap_child;
+  BisAlbumPage *overlap_child;
   gboolean is_transition;
   gboolean is_vertical;
   gboolean is_rtl;
@@ -1936,19 +1936,19 @@ bis_leaflet_snapshot (GtkWidget   *widget,
                   bis_animation_get_state (self->mode_transition.animation) == BIS_ANIMATION_PLAYING;
 
   if (!is_transition ||
-      self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE ||
+      self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE ||
       !overlap_child) {
-    GTK_WIDGET_CLASS (bis_leaflet_parent_class)->snapshot (widget, snapshot);
+    GTK_WIDGET_CLASS (bis_album_parent_class)->snapshot (widget, snapshot);
 
     return;
   }
 
-  stacked_children = self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER ?
+  stacked_children = self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER ?
                      self->children_reversed : self->children;
 
   is_vertical = gtk_orientable_get_orientation (GTK_ORIENTABLE (widget)) == GTK_ORIENTATION_VERTICAL;
   is_rtl = gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL;
-  is_over = self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER;
+  is_over = self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER;
 
   shadow_rect.x = 0;
   shadow_rect.y = 0;
@@ -1978,7 +1978,7 @@ bis_leaflet_snapshot (GtkWidget   *widget,
                                                shadow_rect.height));
 
   for (l = stacked_children; l; l = l->next) {
-    BisLeafletPage *page = l->data;
+    BisAlbumPage *page = l->data;
 
     if (page == overlap_child) {
       gtk_snapshot_pop (snapshot);
@@ -2017,59 +2017,59 @@ bis_leaflet_snapshot (GtkWidget   *widget,
 }
 
 static void
-bis_leaflet_direction_changed (GtkWidget        *widget,
+bis_album_direction_changed (GtkWidget        *widget,
                                GtkTextDirection  previous_direction)
 {
-  update_tracker_orientation (BIS_LEAFLET (widget));
+  update_tracker_orientation (BIS_ALBUM (widget));
 }
 
 static void
-bis_leaflet_get_property (GObject    *object,
+bis_album_get_property (GObject    *object,
                           guint       prop_id,
                           GValue     *value,
                           GParamSpec *pspec)
 {
-  BisLeaflet *self = BIS_LEAFLET (object);
+  BisAlbum *self = BIS_ALBUM (object);
 
   switch (prop_id) {
   case PROP_CAN_UNFOLD:
-    g_value_set_boolean (value, bis_leaflet_get_can_unfold (self));
+    g_value_set_boolean (value, bis_album_get_can_unfold (self));
     break;
   case PROP_FOLDED:
-    g_value_set_boolean (value, bis_leaflet_get_folded (self));
+    g_value_set_boolean (value, bis_album_get_folded (self));
     break;
   case PROP_FOLD_THRESHOLD_POLICY:
-    g_value_set_enum (value, bis_leaflet_get_fold_threshold_policy (self));
+    g_value_set_enum (value, bis_album_get_fold_threshold_policy (self));
     break;
   case PROP_HOMOGENEOUS:
-    g_value_set_boolean (value, bis_leaflet_get_homogeneous (self));
+    g_value_set_boolean (value, bis_album_get_homogeneous (self));
     break;
   case PROP_VISIBLE_CHILD:
-    g_value_set_object (value, bis_leaflet_get_visible_child (self));
+    g_value_set_object (value, bis_album_get_visible_child (self));
     break;
   case PROP_VISIBLE_CHILD_NAME:
-    g_value_set_string (value, bis_leaflet_get_visible_child_name (self));
+    g_value_set_string (value, bis_album_get_visible_child_name (self));
     break;
   case PROP_TRANSITION_TYPE:
-    g_value_set_enum (value, bis_leaflet_get_transition_type (self));
+    g_value_set_enum (value, bis_album_get_transition_type (self));
     break;
   case PROP_MODE_TRANSITION_DURATION:
-    g_value_set_uint (value, bis_leaflet_get_mode_transition_duration (self));
+    g_value_set_uint (value, bis_album_get_mode_transition_duration (self));
     break;
   case PROP_CHILD_TRANSITION_PARAMS:
-    g_value_set_boxed (value, bis_leaflet_get_child_transition_params (self));
+    g_value_set_boxed (value, bis_album_get_child_transition_params (self));
     break;
   case PROP_CHILD_TRANSITION_RUNNING:
-    g_value_set_boolean (value, bis_leaflet_get_child_transition_running (self));
+    g_value_set_boolean (value, bis_album_get_child_transition_running (self));
     break;
   case PROP_CAN_NAVIGATE_BACK:
-    g_value_set_boolean (value, bis_leaflet_get_can_navigate_back (self));
+    g_value_set_boolean (value, bis_album_get_can_navigate_back (self));
     break;
   case PROP_CAN_NAVIGATE_FORWARD:
-    g_value_set_boolean (value, bis_leaflet_get_can_navigate_forward (self));
+    g_value_set_boolean (value, bis_album_get_can_navigate_forward (self));
     break;
   case PROP_PAGES:
-    g_value_take_object (value, bis_leaflet_get_pages (self));
+    g_value_take_object (value, bis_album_get_pages (self));
     break;
   case PROP_ORIENTATION:
     g_value_set_enum (value, self->orientation);
@@ -2080,43 +2080,43 @@ bis_leaflet_get_property (GObject    *object,
 }
 
 static void
-bis_leaflet_set_property (GObject      *object,
+bis_album_set_property (GObject      *object,
                           guint         prop_id,
                           const GValue *value,
                           GParamSpec   *pspec)
 {
-  BisLeaflet *self = BIS_LEAFLET (object);
+  BisAlbum *self = BIS_ALBUM (object);
 
   switch (prop_id) {
   case PROP_CAN_UNFOLD:
-    bis_leaflet_set_can_unfold (self, g_value_get_boolean (value));
+    bis_album_set_can_unfold (self, g_value_get_boolean (value));
     break;
   case PROP_FOLD_THRESHOLD_POLICY:
-    bis_leaflet_set_fold_threshold_policy (self, g_value_get_enum (value));
+    bis_album_set_fold_threshold_policy (self, g_value_get_enum (value));
     break;
   case PROP_HOMOGENEOUS:
-    bis_leaflet_set_homogeneous (self, g_value_get_boolean (value));
+    bis_album_set_homogeneous (self, g_value_get_boolean (value));
     break;
   case PROP_VISIBLE_CHILD:
-    bis_leaflet_set_visible_child (self, g_value_get_object (value));
+    bis_album_set_visible_child (self, g_value_get_object (value));
     break;
   case PROP_VISIBLE_CHILD_NAME:
-    bis_leaflet_set_visible_child_name (self, g_value_get_string (value));
+    bis_album_set_visible_child_name (self, g_value_get_string (value));
     break;
   case PROP_TRANSITION_TYPE:
-    bis_leaflet_set_transition_type (self, g_value_get_enum (value));
+    bis_album_set_transition_type (self, g_value_get_enum (value));
     break;
   case PROP_MODE_TRANSITION_DURATION:
-    bis_leaflet_set_mode_transition_duration (self, g_value_get_uint (value));
+    bis_album_set_mode_transition_duration (self, g_value_get_uint (value));
     break;
   case PROP_CHILD_TRANSITION_PARAMS:
-    bis_leaflet_set_child_transition_params (self, g_value_get_boxed (value));
+    bis_album_set_child_transition_params (self, g_value_get_boxed (value));
     break;
   case PROP_CAN_NAVIGATE_BACK:
-    bis_leaflet_set_can_navigate_back (self, g_value_get_boolean (value));
+    bis_album_set_can_navigate_back (self, g_value_get_boolean (value));
     break;
   case PROP_CAN_NAVIGATE_FORWARD:
-    bis_leaflet_set_can_navigate_forward (self, g_value_get_boolean (value));
+    bis_album_set_can_navigate_forward (self, g_value_get_boolean (value));
     break;
   case PROP_ORIENTATION:
     set_orientation (self, g_value_get_enum (value));
@@ -2127,9 +2127,9 @@ bis_leaflet_set_property (GObject      *object,
 }
 
 static void
-bis_leaflet_dispose (GObject *object)
+bis_album_dispose (GObject *object)
 {
-  BisLeaflet *self = BIS_LEAFLET (object);
+  BisAlbum *self = BIS_ALBUM (object);
   GtkWidget *child;
 
   g_clear_object (&self->shadow_helper);
@@ -2139,18 +2139,18 @@ bis_leaflet_dispose (GObject *object)
                                 g_list_length (self->children), 0);
 
   while ((child = gtk_widget_get_first_child (GTK_WIDGET (self))))
-    leaflet_remove (self, child, TRUE);
+    album_remove (self, child, TRUE);
 
   g_clear_object (&self->mode_transition.animation);
   g_clear_object (&self->child_transition.animation);
 
-  G_OBJECT_CLASS (bis_leaflet_parent_class)->dispose (object);
+  G_OBJECT_CLASS (bis_album_parent_class)->dispose (object);
 }
 
 static void
-bis_leaflet_finalize (GObject *object)
+bis_album_finalize (GObject *object)
 {
-  BisLeaflet *self = BIS_LEAFLET (object);
+  BisAlbum *self = BIS_ALBUM (object);
 
   self->visible_child = NULL;
 
@@ -2158,24 +2158,24 @@ bis_leaflet_finalize (GObject *object)
     g_object_remove_weak_pointer (G_OBJECT (self->pages),
                                   (gpointer *) &self->pages);
 
-  G_OBJECT_CLASS (bis_leaflet_parent_class)->finalize (object);
+  G_OBJECT_CLASS (bis_album_parent_class)->finalize (object);
 }
 
 static void
-bis_leaflet_class_init (BisLeafletClass *klass)
+bis_album_class_init (BisAlbumClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  object_class->get_property = bis_leaflet_get_property;
-  object_class->set_property = bis_leaflet_set_property;
-  object_class->dispose = bis_leaflet_dispose;
-  object_class->finalize = bis_leaflet_finalize;
+  object_class->get_property = bis_album_get_property;
+  object_class->set_property = bis_album_set_property;
+  object_class->dispose = bis_album_dispose;
+  object_class->finalize = bis_album_finalize;
 
-  widget_class->measure = bis_leaflet_measure;
-  widget_class->size_allocate = bis_leaflet_size_allocate;
-  widget_class->snapshot = bis_leaflet_snapshot;
-  widget_class->direction_changed = bis_leaflet_direction_changed;
+  widget_class->measure = bis_album_measure;
+  widget_class->size_allocate = bis_album_size_allocate;
+  widget_class->snapshot = bis_album_snapshot;
+  widget_class->direction_changed = bis_album_direction_changed;
   widget_class->get_request_mode = bis_widget_get_request_mode;
   widget_class->compute_expand = bis_widget_compute_expand;
 
@@ -2184,9 +2184,9 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                                     "orientation");
 
   /**
-   * BisLeaflet:can-unfold: (attributes org.gtk.Property.get=bis_leaflet_get_can_unfold org.gtk.Property.set=bis_leaflet_set_can_unfold)
+   * BisAlbum:can-unfold: (attributes org.gtk.Property.get=bis_album_get_can_unfold org.gtk.Property.set=bis_album_set_can_unfold)
    *
-   * Whether or not the leaflet can unfold.
+   * Whether or not the album can unfold.
    *
    * Since: 1.0
    */
@@ -2196,13 +2196,13 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:folded: (attributes org.gtk.Property.get=bis_leaflet_get_folded)
+   * BisAlbum:folded: (attributes org.gtk.Property.get=bis_album_get_folded)
    *
-   * Whether the leaflet is folded.
+   * Whether the album is folded.
    *
-   * The leaflet will be folded if the size allocated to it is smaller than the
+   * The album will be folded if the size allocated to it is smaller than the
    * sum of the minimum or natural sizes of the children (see
-   * [property@Leaflet:fold-threshold-policy]), it will be unfolded otherwise.
+   * [property@Album:fold-threshold-policy]), it will be unfolded otherwise.
    *
    * Since: 1.0
    */
@@ -2212,9 +2212,9 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisLeaflet:fold-threshold-policy: (attributes org.gtk.Property.get=bis_leaflet_get_fold_threshold_policy org.gtk.Property.set=bis_leaflet_set_fold_threshold_policy)
+   * BisAlbum:fold-threshold-policy: (attributes org.gtk.Property.get=bis_album_get_fold_threshold_policy org.gtk.Property.set=bis_album_set_fold_threshold_policy)
    *
-   * Determines when the leaflet will fold.
+   * Determines when the album will fold.
    *
    * If set to `BIS_FOLD_THRESHOLD_POLICY_MINIMUM`, it will only fold when the
    * children cannot fit anymore. With `BIS_FOLD_THRESHOLD_POLICY_NATURAL`, it
@@ -2232,9 +2232,9 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:homogeneous: (attributes org.gtk.Property.get=bis_leaflet_get_homogeneous org.gtk.Property.set=bis_leaflet_set_homogeneous)
+   * BisAlbum:homogeneous: (attributes org.gtk.Property.get=bis_album_get_homogeneous org.gtk.Property.set=bis_album_set_homogeneous)
    *
-   * Whether the leaflet allocates the same size for all children when folded.
+   * Whether the album allocates the same size for all children when folded.
    *
    * If set to `FALSE`, different children can have different size along the
    * opposite orientation.
@@ -2247,12 +2247,12 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:visible-child: (attributes org.gtk.Property.get=bis_leaflet_get_visible_child org.gtk.Property.set=bis_leaflet_set_visible_child)
+   * BisAlbum:visible-child: (attributes org.gtk.Property.get=bis_album_get_visible_child org.gtk.Property.set=bis_album_set_visible_child)
    *
-   * The widget currently visible when the leaflet is folded.
+   * The widget currently visible when the album is folded.
    *
-   * The transition is determined by [property@Leaflet:transition-type] and
-   * [property@Leaflet:child-transition-params]. The transition can be cancelled
+   * The transition is determined by [property@Album:transition-type] and
+   * [property@Album:child-transition-params]. The transition can be cancelled
    * by the user, in which case visible child will change back to the previously
    * visible child.
    *
@@ -2264,11 +2264,11 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:visible-child-name: (attributes org.gtk.Property.get=bis_leaflet_get_visible_child_name org.gtk.Property.set=bis_leaflet_set_visible_child_name)
+   * BisAlbum:visible-child-name: (attributes org.gtk.Property.get=bis_album_get_visible_child_name org.gtk.Property.set=bis_album_set_visible_child_name)
    *
-   * The name of the widget currently visible when the leaflet is folded.
+   * The name of the widget currently visible when the album is folded.
    *
-   * See [property@Leaflet:visible-child].
+   * See [property@Album:visible-child].
    *
    * Since: 1.0
    */
@@ -2278,7 +2278,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:transition-type: (attributes org.gtk.Property.get=bis_leaflet_get_transition_type org.gtk.Property.set=bis_leaflet_set_transition_type)
+   * BisAlbum:transition-type: (attributes org.gtk.Property.get=bis_album_get_transition_type org.gtk.Property.set=bis_album_set_transition_type)
    *
    * The type of animation used for transitions between modes and children.
    *
@@ -2290,11 +2290,11 @@ bis_leaflet_class_init (BisLeafletClass *klass)
    */
   props[PROP_TRANSITION_TYPE] =
     g_param_spec_enum ("transition-type", NULL, NULL,
-                       BIS_TYPE_LEAFLET_TRANSITION_TYPE, BIS_LEAFLET_TRANSITION_TYPE_OVER,
+                       BIS_TYPE_ALBUM_TRANSITION_TYPE, BIS_ALBUM_TRANSITION_TYPE_OVER,
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:mode-transition-duration: (attributes org.gtk.Property.get=bis_leaflet_get_mode_transition_duration org.gtk.Property.set=bis_leaflet_set_mode_transition_duration)
+   * BisAlbum:mode-transition-duration: (attributes org.gtk.Property.get=bis_album_get_mode_transition_duration org.gtk.Property.set=bis_album_set_mode_transition_duration)
    *
    * The mode transition animation duration, in milliseconds.
    *
@@ -2306,7 +2306,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:child-transition-params: (attributes org.gtk.Property.get=bis_leaflet_get_child_transition_params org.gtk.Property.set=bis_leaflet_set_child_transition_params)
+   * BisAlbum:child-transition-params: (attributes org.gtk.Property.get=bis_album_get_child_transition_params org.gtk.Property.set=bis_album_set_child_transition_params)
    *
    * The child transition spring parameters.
    *
@@ -2324,7 +2324,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:child-transition-running: (attributes org.gtk.Property.get=bis_leaflet_get_child_transition_running)
+   * BisAlbum:child-transition-running: (attributes org.gtk.Property.get=bis_album_get_child_transition_running)
    *
    * Whether a child transition is currently running.
    *
@@ -2336,7 +2336,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
-   * BisLeaflet:can-navigate-back: (attributes org.gtk.Property.get=bis_leaflet_get_can_navigate_back org.gtk.Property.set=bis_leaflet_set_can_navigate_back)
+   * BisAlbum:can-navigate-back: (attributes org.gtk.Property.get=bis_album_get_can_navigate_back org.gtk.Property.set=bis_album_set_can_navigate_back)
    *
    * Whether gestures and shortcuts for navigating backward are enabled.
    *
@@ -2353,7 +2353,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
    * If the orientation is horizontal, for right-to-left locales, gestures and
    * shortcuts are reversed.
    *
-   * Only children that have [property@LeafletPage:navigatable] set to `TRUE`
+   * Only children that have [property@AlbumPage:navigatable] set to `TRUE`
    * can be navigated to.
    *
    * Since: 1.0
@@ -2364,7 +2364,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:can-navigate-forward: (attributes org.gtk.Property.get=bis_leaflet_get_can_navigate_forward org.gtk.Property.set=bis_leaflet_set_can_navigate_forward)
+   * BisAlbum:can-navigate-forward: (attributes org.gtk.Property.get=bis_album_get_can_navigate_forward org.gtk.Property.set=bis_album_set_can_navigate_forward)
    *
    * Whether gestures and shortcuts for navigating forward are enabled.
    *
@@ -2381,7 +2381,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
    * If the orientation is horizontal, for right-to-left locales, gestures and
    * shortcuts are reversed.
    *
-   * Only children that have [property@LeafletPage:navigatable] set to `TRUE`
+   * Only children that have [property@AlbumPage:navigatable] set to `TRUE`
    * can be navigated to.
    *
    * Since: 1.0
@@ -2392,9 +2392,9 @@ bis_leaflet_class_init (BisLeafletClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisLeaflet:pages: (attributes org.gtk.Property.get=bis_leaflet_get_pages)
+   * BisAlbum:pages: (attributes org.gtk.Property.get=bis_album_get_pages)
    *
-   * A selection model with the leaflet's pages.
+   * A selection model with the album's pages.
    *
    * This can be used to keep an up-to-date view. The model also implements
    * [iface@Gtk.SelectionModel] and can be used to track and change the visible
@@ -2409,7 +2409,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 
-  gtk_widget_class_set_css_name (widget_class, "leaflet");
+  gtk_widget_class_set_css_name (widget_class, "album");
 
   gtk_widget_class_add_binding (widget_class, GDK_KEY_Back, 0,
                                 (GtkShortcutFunc) back_forward_shortcut_cb,
@@ -2438,7 +2438,7 @@ bis_leaflet_class_init (BisLeafletClass *klass)
 }
 
 static void
-bis_leaflet_init (BisLeaflet *self)
+bis_album_init (BisAlbum *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GtkEventController *controller;
@@ -2452,7 +2452,7 @@ bis_leaflet_init (BisLeaflet *self)
   self->folded = FALSE;
   self->fold_threshold_policy = BIS_FOLD_THRESHOLD_POLICY_MINIMUM;
   self->homogeneous = TRUE;
-  self->transition_type = BIS_LEAFLET_TRANSITION_TYPE_OVER;
+  self->transition_type = BIS_ALBUM_TRANSITION_TYPE_OVER;
   self->mode_transition.duration = 250;
   self->mode_transition.current_pos = 1.0;
   self->can_unfold = TRUE;
@@ -2492,34 +2492,34 @@ bis_leaflet_init (BisLeaflet *self)
 }
 
 static void
-bis_leaflet_buildable_add_child (GtkBuildable *buildable,
+bis_album_buildable_add_child (GtkBuildable *buildable,
                                  GtkBuilder   *builder,
                                  GObject      *child,
                                  const char   *type)
 {
-  BisLeaflet *self = BIS_LEAFLET (buildable);
+  BisAlbum *self = BIS_ALBUM (buildable);
 
-  if (BIS_IS_LEAFLET_PAGE (child))
-    add_page (self, BIS_LEAFLET_PAGE (child),
+  if (BIS_IS_ALBUM_PAGE (child))
+    add_page (self, BIS_ALBUM_PAGE (child),
               self->children ? g_list_last (self->children)->data : NULL);
   else if (GTK_IS_WIDGET (child))
-    bis_leaflet_append (self, GTK_WIDGET (child));
+    bis_album_append (self, GTK_WIDGET (child));
   else
     parent_buildable_iface->add_child (buildable, builder, child, type);
 }
 
 static void
-bis_leaflet_buildable_init (GtkBuildableIface *iface)
+bis_album_buildable_init (GtkBuildableIface *iface)
 {
   parent_buildable_iface = g_type_interface_peek_parent (iface);
 
-  iface->add_child = bis_leaflet_buildable_add_child;
+  iface->add_child = bis_album_buildable_add_child;
 }
 
 static double
-bis_leaflet_get_distance (BisSwipeable *swipeable)
+bis_album_get_distance (BisSwipeable *swipeable)
 {
-  BisLeaflet *self = BIS_LEAFLET (swipeable);
+  BisAlbum *self = BIS_ALBUM (swipeable);
 
   if (self->orientation == GTK_ORIENTATION_HORIZONTAL)
     return gtk_widget_get_width (GTK_WIDGET (self));
@@ -2528,10 +2528,10 @@ bis_leaflet_get_distance (BisSwipeable *swipeable)
 }
 
 static double *
-bis_leaflet_get_snap_points (BisSwipeable *swipeable,
+bis_album_get_snap_points (BisSwipeable *swipeable,
                              int          *n_snap_points)
 {
-  BisLeaflet *self = BIS_LEAFLET (swipeable);
+  BisAlbum *self = BIS_ALBUM (swipeable);
   int n;
   double *points, lower, upper;
 
@@ -2559,7 +2559,7 @@ bis_leaflet_get_snap_points (BisSwipeable *swipeable,
     lower = MIN (0, current_direction);
     upper = MAX (0, current_direction);
   } else {
-    BisLeafletPage *page = NULL;
+    BisAlbumPage *page = NULL;
 
     if (can_navigate_in_direction (self, self->child_transition.swipe_direction) && self->folded)
       page = find_swipeable_page (self, self->child_transition.swipe_direction);
@@ -2581,9 +2581,9 @@ bis_leaflet_get_snap_points (BisSwipeable *swipeable,
 }
 
 static double
-bis_leaflet_get_progress (BisSwipeable *swipeable)
+bis_album_get_progress (BisSwipeable *swipeable)
 {
-  BisLeaflet *self = BIS_LEAFLET (swipeable);
+  BisAlbum *self = BIS_ALBUM (swipeable);
   gboolean new_first = FALSE;
   GList *children;
 
@@ -2604,18 +2604,18 @@ bis_leaflet_get_progress (BisSwipeable *swipeable)
 }
 
 static double
-bis_leaflet_get_cancel_progress (BisSwipeable *swipeable)
+bis_album_get_cancel_progress (BisSwipeable *swipeable)
 {
   return 0;
 }
 
 static void
-bis_leaflet_get_swipe_area (BisSwipeable           *swipeable,
+bis_album_get_swipe_area (BisSwipeable           *swipeable,
                             BisNavigationDirection  navigation_direction,
                             gboolean                is_drag,
                             GdkRectangle           *rect)
 {
-  BisLeaflet *self = BIS_LEAFLET (swipeable);
+  BisAlbum *self = BIS_ALBUM (swipeable);
   int width = gtk_widget_get_width (GTK_WIDGET (self));
   int height = gtk_widget_get_height (GTK_WIDGET (self));
   double progress = 0;
@@ -2628,7 +2628,7 @@ bis_leaflet_get_swipe_area (BisSwipeable           *swipeable,
   if (!is_drag)
     return;
 
-  if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_SLIDE)
+  if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_SLIDE)
     return;
 
   if (self->child_transition.transition_running)
@@ -2637,21 +2637,21 @@ bis_leaflet_get_swipe_area (BisSwipeable           *swipeable,
   if (self->orientation == GTK_ORIENTATION_HORIZONTAL) {
     gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL;
 
-    if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER &&
+    if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER &&
          navigation_direction == BIS_NAVIGATION_DIRECTION_FORWARD) {
       rect->width = MAX (progress * width, BIS_SWIPE_BORDER);
       rect->x = is_rtl ? 0 : width - rect->width;
-    } else if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER &&
+    } else if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER &&
                navigation_direction == BIS_NAVIGATION_DIRECTION_BACK) {
       rect->width = MAX (progress * width, BIS_SWIPE_BORDER);
       rect->x = is_rtl ? width - rect->width : 0;
     }
   } else {
-    if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER &&
+    if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER &&
         navigation_direction == BIS_NAVIGATION_DIRECTION_FORWARD) {
       rect->height = MAX (progress * height, BIS_SWIPE_BORDER);
       rect->y = height - rect->height;
-    } else if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_UNDER &&
+    } else if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_UNDER &&
                navigation_direction == BIS_NAVIGATION_DIRECTION_BACK) {
       rect->height = MAX (progress * height, BIS_SWIPE_BORDER);
       rect->y = 0;
@@ -2660,36 +2660,36 @@ bis_leaflet_get_swipe_area (BisSwipeable           *swipeable,
 }
 
 static void
-bis_leaflet_swipeable_init (BisSwipeableInterface *iface)
+bis_album_swipeable_init (BisSwipeableInterface *iface)
 {
-  iface->get_distance = bis_leaflet_get_distance;
-  iface->get_snap_points = bis_leaflet_get_snap_points;
-  iface->get_progress = bis_leaflet_get_progress;
-  iface->get_cancel_progress = bis_leaflet_get_cancel_progress;
-  iface->get_swipe_area = bis_leaflet_get_swipe_area;
+  iface->get_distance = bis_album_get_distance;
+  iface->get_snap_points = bis_album_get_snap_points;
+  iface->get_progress = bis_album_get_progress;
+  iface->get_cancel_progress = bis_album_get_cancel_progress;
+  iface->get_swipe_area = bis_album_get_swipe_area;
 }
 
 /**
- * bis_leaflet_page_get_child: (attributes org.gtk.Method.get_property=child)
- * @self: a leaflet page
+ * bis_album_page_get_child: (attributes org.gtk.Method.get_property=child)
+ * @self: a album page
  *
- * Gets the leaflet child to which @self belongs.
+ * Gets the album child to which @self belongs.
  *
  * Returns: (transfer none): the child to which @self belongs
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_leaflet_page_get_child (BisLeafletPage *self)
+bis_album_page_get_child (BisAlbumPage *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET_PAGE (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM_PAGE (self), NULL);
 
   return self->widget;
 }
 
 /**
- * bis_leaflet_page_get_name: (attributes org.gtk.Method.get_property=name)
- * @self: a leaflet page
+ * bis_album_page_get_name: (attributes org.gtk.Method.get_property=name)
+ * @self: a album page
  *
  * Gets the name of @self.
  *
@@ -2698,16 +2698,16 @@ bis_leaflet_page_get_child (BisLeafletPage *self)
  * Since: 1.0
  */
 const char *
-bis_leaflet_page_get_name (BisLeafletPage *self)
+bis_album_page_get_name (BisAlbumPage *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET_PAGE (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM_PAGE (self), NULL);
 
   return self->name;
 }
 
 /**
- * bis_leaflet_page_set_name: (attributes org.gtk.Method.set_property=name)
- * @self: a leaflet page
+ * bis_album_page_set_name: (attributes org.gtk.Method.set_property=name)
+ * @self: a album page
  * @name: (nullable): the new value to set
  *
  * Sets the name of the @self.
@@ -2715,29 +2715,29 @@ bis_leaflet_page_get_name (BisLeafletPage *self)
  * Since: 1.0
  */
 void
-bis_leaflet_page_set_name (BisLeafletPage *self,
+bis_album_page_set_name (BisAlbumPage *self,
                            const char     *name)
 {
-  BisLeaflet *leaflet = NULL;
+  BisAlbum *album = NULL;
 
-  g_return_if_fail (BIS_IS_LEAFLET_PAGE (self));
+  g_return_if_fail (BIS_IS_ALBUM_PAGE (self));
 
   if (self->widget &&
     gtk_widget_get_parent (self->widget) &&
-    BIS_IS_LEAFLET (gtk_widget_get_parent (self->widget))) {
+    BIS_IS_ALBUM (gtk_widget_get_parent (self->widget))) {
     GList *l;
 
-    leaflet = BIS_LEAFLET (gtk_widget_get_parent (self->widget));
+    album = BIS_ALBUM (gtk_widget_get_parent (self->widget));
 
-    for (l = leaflet->children; l; l = l->next) {
-      BisLeafletPage *page = l->data;
+    for (l = album->children; l; l = l->next) {
+      BisAlbumPage *page = l->data;
 
       if (self == page)
         continue;
 
       if (g_strcmp0 (page->name, name) == 0)
         {
-          g_warning ("Duplicate child name in BisLeaflet: %s", name);
+          g_warning ("Duplicate child name in BisAlbum: %s", name);
           break;
         }
     }
@@ -2750,13 +2750,13 @@ bis_leaflet_page_set_name (BisLeafletPage *self,
   self->name = g_strdup (name);
   g_object_notify_by_pspec (G_OBJECT (self), page_props[PAGE_PROP_NAME]);
 
-  if (leaflet && leaflet->visible_child == self)
-    g_object_notify_by_pspec (G_OBJECT (leaflet), props[PROP_VISIBLE_CHILD_NAME]);
+  if (album && album->visible_child == self)
+    g_object_notify_by_pspec (G_OBJECT (album), props[PROP_VISIBLE_CHILD_NAME]);
 }
 
 /**
- * bis_leaflet_page_get_navigatable: (attributes org.gtk.Method.get_property=navigatable)
- * @self: a leaflet page
+ * bis_album_page_get_navigatable: (attributes org.gtk.Method.get_property=navigatable)
+ * @self: a album page
  *
  * Gets whether the child can be navigated to when folded.
  *
@@ -2765,32 +2765,32 @@ bis_leaflet_page_set_name (BisLeafletPage *self,
  * Since: 1.0
  */
 gboolean
-bis_leaflet_page_get_navigatable (BisLeafletPage *self)
+bis_album_page_get_navigatable (BisAlbumPage *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET_PAGE (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM_PAGE (self), FALSE);
 
   return self->navigatable;
 }
 
 /**
- * bis_leaflet_page_set_navigatable: (attributes org.gtk.Method.set_property=navigatable)
- * @self: a leaflet page
+ * bis_album_page_set_navigatable: (attributes org.gtk.Method.set_property=navigatable)
+ * @self: a album page
  * @navigatable: whether @self can be navigated to when folded
  *
  * Sets whether @self can be navigated to when folded.
  *
- * If `FALSE`, the child will be ignored by [method@Leaflet.get_adjacent_child],
- * [method@Leaflet.navigate], and swipe gestures.
+ * If `FALSE`, the child will be ignored by [method@Album.get_adjacent_child],
+ * [method@Album.navigate], and swipe gestures.
  *
  * This can be used used to prevent switching to widgets like separators.
  *
  * Since: 1.0
  */
 void
-bis_leaflet_page_set_navigatable (BisLeafletPage *self,
+bis_album_page_set_navigatable (BisAlbumPage *self,
                                   gboolean        navigatable)
 {
-  g_return_if_fail (BIS_IS_LEAFLET_PAGE (self));
+  g_return_if_fail (BIS_IS_ALBUM_PAGE (self));
 
   navigatable = !!navigatable;
 
@@ -2800,84 +2800,84 @@ bis_leaflet_page_set_navigatable (BisLeafletPage *self,
   self->navigatable = navigatable;
 
   if (self->widget && gtk_widget_get_parent (self->widget)) {
-    BisLeaflet *leaflet = BIS_LEAFLET (gtk_widget_get_parent (self->widget));
+    BisAlbum *album = BIS_ALBUM (gtk_widget_get_parent (self->widget));
 
-    if (self == leaflet->visible_child)
-      set_visible_child (leaflet, NULL);
+    if (self == album->visible_child)
+      set_visible_child (album, NULL);
   }
 
   g_object_notify_by_pspec (G_OBJECT (self), page_props[PAGE_PROP_NAVIGATABLE]);
 }
 
 /**
- * bis_leaflet_new:
+ * bis_album_new:
  *
- * Creates a new `BisLeaflet`.
+ * Creates a new `BisAlbum`.
  *
- * Returns: the new created `BisLeaflet`
+ * Returns: the new created `BisAlbum`
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_leaflet_new (void)
+bis_album_new (void)
 {
-  return g_object_new (BIS_TYPE_LEAFLET, NULL);
+  return g_object_new (BIS_TYPE_ALBUM, NULL);
 }
 
 /**
- * bis_leaflet_append:
- * @self: a leaflet
+ * bis_album_append:
+ * @self: a album
  * @child: the widget to add
  *
  * Adds a child to @self.
  *
- * Returns: (transfer none): the [class@LeafletPage] for @child
+ * Returns: (transfer none): the [class@AlbumPage] for @child
  *
  * Since: 1.0
  */
-BisLeafletPage *
-bis_leaflet_append (BisLeaflet *self,
+BisAlbumPage *
+bis_album_append (BisAlbum *self,
                     GtkWidget  *child)
 {
   GtkWidget *sibling;
 
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
   g_return_val_if_fail (gtk_widget_get_parent (child) == NULL, NULL);
 
   if (self->children)
-    sibling = bis_leaflet_page_get_child (g_list_last (self->children)->data);
+    sibling = bis_album_page_get_child (g_list_last (self->children)->data);
   else
     sibling = NULL;
 
-  return bis_leaflet_insert_child_after (self, child, sibling);
+  return bis_album_insert_child_after (self, child, sibling);
 }
 
 /**
- * bis_leaflet_prepend:
- * @self: a leaflet
+ * bis_album_prepend:
+ * @self: a album
  * @child: the widget to prepend
  *
  * Inserts @child at the first position in @self.
  *
- * Returns: (transfer none): the [class@LeafletPage] for @child
+ * Returns: (transfer none): the [class@AlbumPage] for @child
  *
  * Since: 1.0
  */
-BisLeafletPage *
-bis_leaflet_prepend (BisLeaflet *self,
+BisAlbumPage *
+bis_album_prepend (BisAlbum *self,
                      GtkWidget  *child)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
   g_return_val_if_fail (gtk_widget_get_parent (child) == NULL, NULL);
 
-  return bis_leaflet_insert_child_after (self, child, NULL);
+  return bis_album_insert_child_after (self, child, NULL);
 }
 
 /**
- * bis_leaflet_insert_child_after:
- * @self: a leaflet
+ * bis_album_insert_child_after:
+ * @self: a album
  * @child: the widget to insert
  * @sibling: (nullable): the sibling after which to insert @child
  *
@@ -2885,25 +2885,25 @@ bis_leaflet_prepend (BisLeaflet *self,
  *
  * If @sibling is `NULL`, inserts @child at the first position.
  *
- * Returns: (transfer none): the [class@LeafletPage] for @child
+ * Returns: (transfer none): the [class@AlbumPage] for @child
  *
  * Since: 1.0
  */
-BisLeafletPage *
-bis_leaflet_insert_child_after (BisLeaflet *self,
+BisAlbumPage *
+bis_album_insert_child_after (BisAlbum *self,
                                 GtkWidget  *child,
                                 GtkWidget  *sibling)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
 
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
   g_return_val_if_fail (sibling == NULL || GTK_IS_WIDGET (sibling), NULL);
 
   g_return_val_if_fail (gtk_widget_get_parent (child) == NULL, NULL);
   g_return_val_if_fail (sibling == NULL || gtk_widget_get_parent (sibling) == GTK_WIDGET (self), NULL);
 
-  page = g_object_new (BIS_TYPE_LEAFLET_PAGE, NULL);
+  page = g_object_new (BIS_TYPE_ALBUM_PAGE, NULL);
   page->widget = g_object_ref (child);
 
   add_page (self, page, find_page_for_widget (self, sibling));
@@ -2915,8 +2915,8 @@ bis_leaflet_insert_child_after (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_reorder_child_after:
- * @self: a leaflet
+ * bis_album_reorder_child_after:
+ * @self: a album
  * @child: the widget to move, must be a child of @self
  * @sibling: (nullable): the sibling to move @child after
  *
@@ -2927,16 +2927,16 @@ bis_leaflet_insert_child_after (BisLeaflet *self,
  * Since: 1.0
  */
 void
-bis_leaflet_reorder_child_after (BisLeaflet *self,
+bis_album_reorder_child_after (BisAlbum *self,
                                  GtkWidget  *child,
                                  GtkWidget  *sibling)
 {
-  BisLeafletPage *child_page;
-  BisLeafletPage *sibling_page;
+  BisAlbumPage *child_page;
+  BisAlbumPage *sibling_page;
   int sibling_page_pos;
   int previous_position;
 
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (GTK_IS_WIDGET (child));
   g_return_if_fail (sibling == NULL || GTK_IS_WIDGET (sibling));
 
@@ -2985,8 +2985,8 @@ bis_leaflet_reorder_child_after (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_remove:
- * @self: a leaflet
+ * bis_album_remove:
+ * @self: a album
  * @child: the child to remove
  *
  * Removes a child widget from @self.
@@ -2994,53 +2994,53 @@ bis_leaflet_reorder_child_after (BisLeaflet *self,
  * Since: 1.0
  */
 void
-bis_leaflet_remove (BisLeaflet *self,
+bis_album_remove (BisAlbum *self,
                     GtkWidget  *child)
 {
   GList *l;
   guint position;
 
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (GTK_IS_WIDGET (child));
   g_return_if_fail (gtk_widget_get_parent (child) == GTK_WIDGET (self));
 
   for (l = self->children, position = 0; l; l = l->next, position++) {
-    BisLeafletPage *page = l->data;
+    BisAlbumPage *page = l->data;
 
     if (page->widget == child)
       break;
   }
 
-  leaflet_remove (self, child, FALSE);
+  album_remove (self, child, FALSE);
 
   if (self->pages)
     g_list_model_items_changed (G_LIST_MODEL (self->pages), position, 1, 0);
 }
 
 /**
- * bis_leaflet_get_page:
- * @self: a leaflet
+ * bis_album_get_page:
+ * @self: a album
  * @child: a child of @self
  *
- * Returns the [class@LeafletPage] object for @child.
+ * Returns the [class@AlbumPage] object for @child.
  *
  * Returns: (transfer none): the page object for @child
  *
  * Since: 1.0
  */
-BisLeafletPage *
-bis_leaflet_get_page (BisLeaflet *self,
+BisAlbumPage *
+bis_album_get_page (BisAlbum *self,
                       GtkWidget  *child)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
 
   return find_page_for_widget (self, child);
 }
 
 /**
- * bis_leaflet_set_can_unfold: (attributes org.gtk.Method.set_property=can-unfold)
- * @self: a leaflet
+ * bis_album_set_can_unfold: (attributes org.gtk.Method.set_property=can-unfold)
+ * @self: a album
  * @can_unfold: whether @self can unfold
  *
  * Sets whether @self can unfold.
@@ -3048,10 +3048,10 @@ bis_leaflet_get_page (BisLeaflet *self,
  * Since: 1.0
  */
 void
-bis_leaflet_set_can_unfold (BisLeaflet *self,
+bis_album_set_can_unfold (BisAlbum *self,
                             gboolean    can_unfold)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
 
   can_unfold = !!can_unfold;
 
@@ -3066,8 +3066,8 @@ bis_leaflet_set_can_unfold (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_can_unfold: (attributes org.gtk.Method.get_property=can-unfold)
- * @self: a leaflet
+ * bis_album_get_can_unfold: (attributes org.gtk.Method.get_property=can-unfold)
+ * @self: a album
  *
  * Gets whether @self can unfold.
  *
@@ -3076,55 +3076,55 @@ bis_leaflet_set_can_unfold (BisLeaflet *self,
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_can_unfold (BisLeaflet *self)
+bis_album_get_can_unfold (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->can_unfold;
 }
 
 /**
- * bis_leaflet_get_folded: (attributes org.gtk.Method.get_property=folded)
- * @self: a leaflet
+ * bis_album_get_folded: (attributes org.gtk.Method.get_property=folded)
+ * @self: a album
  *
  * Gets whether @self is folded.
  *
- * The leaflet will be folded if the size allocated to it is smaller than the
+ * The album will be folded if the size allocated to it is smaller than the
  * sum of the minimum or natural sizes of the children (see
- * [property@Leaflet:fold-threshold-policy]), it will be unfolded otherwise.
+ * [property@Album:fold-threshold-policy]), it will be unfolded otherwise.
  *
  * Returns: whether @self is folded.
  *
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_folded (BisLeaflet *self)
+bis_album_get_folded (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->folded;
 }
 
 /**
- * bis_leaflet_get_fold_threshold_policy: (attributes org.gtk.Method.get_property=fold-threshold-policy)
- * @self: a leaflet
+ * bis_album_get_fold_threshold_policy: (attributes org.gtk.Method.get_property=fold-threshold-policy)
+ * @self: a album
  *
  * Gets the fold threshold policy for @self.
  *
  * Since: 1.0
  */
 BisFoldThresholdPolicy
-bis_leaflet_get_fold_threshold_policy (BisLeaflet *self)
+bis_album_get_fold_threshold_policy (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), BIS_FOLD_THRESHOLD_POLICY_MINIMUM);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), BIS_FOLD_THRESHOLD_POLICY_MINIMUM);
 
   return self->fold_threshold_policy;
 }
 
 
 /**
- * bis_leaflet_set_fold_threshold_policy: (attributes org.gtk.Method.set_property=fold-threshold-policy)
- * @self: a leaflet
+ * bis_album_set_fold_threshold_policy: (attributes org.gtk.Method.set_property=fold-threshold-policy)
+ * @self: a album
  * @policy: the policy to use
  *
  * Sets the fold threshold policy for @self.
@@ -3139,10 +3139,10 @@ bis_leaflet_get_fold_threshold_policy (BisLeaflet *self)
  * Since: 1.0
  */
 void
-bis_leaflet_set_fold_threshold_policy (BisLeaflet             *self,
+bis_album_set_fold_threshold_policy (BisAlbum             *self,
                                        BisFoldThresholdPolicy  policy)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (policy <= BIS_FOLD_THRESHOLD_POLICY_NATURAL);
 
   if (self->fold_threshold_policy == policy)
@@ -3156,8 +3156,8 @@ bis_leaflet_set_fold_threshold_policy (BisLeaflet             *self,
 }
 
 /**
- * bis_leaflet_get_homogeneous: (attributes org.gtk.Method.get_property=homogeneous)
- * @self: a leaflet
+ * bis_album_get_homogeneous: (attributes org.gtk.Method.get_property=homogeneous)
+ * @self: a album
  *
  * Gets whether @self is homogeneous.
  *
@@ -3166,16 +3166,16 @@ bis_leaflet_set_fold_threshold_policy (BisLeaflet             *self,
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_homogeneous (BisLeaflet *self)
+bis_album_get_homogeneous (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->homogeneous;
 }
 
 /**
- * bis_leaflet_set_homogeneous: (attributes org.gtk.Method.set_property=homogeneous)
- * @self: a leaflet
+ * bis_album_set_homogeneous: (attributes org.gtk.Method.set_property=homogeneous)
+ * @self: a album
  * @homogeneous: whether to make @self homogeneous
  *
  * Sets @self to be homogeneous or not.
@@ -3186,10 +3186,10 @@ bis_leaflet_get_homogeneous (BisLeaflet *self)
  * Since: 1.0
  */
 void
-bis_leaflet_set_homogeneous (BisLeaflet *self,
+bis_album_set_homogeneous (BisAlbum *self,
                              gboolean    homogeneous)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
 
   homogeneous = !!homogeneous;
 
@@ -3204,19 +3204,19 @@ bis_leaflet_set_homogeneous (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_visible_child: (attributes org.gtk.Method.get_property=visible-child)
- * @self: a leaflet
+ * bis_album_get_visible_child: (attributes org.gtk.Method.get_property=visible-child)
+ * @self: a album
  *
- * Gets the widget currently visible when the leaflet is folded.
+ * Gets the widget currently visible when the album is folded.
  *
  * Returns: (nullable) (transfer none): the visible child
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_leaflet_get_visible_child (BisLeaflet *self)
+bis_album_get_visible_child (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
 
   if (self->visible_child == NULL)
     return NULL;
@@ -3225,27 +3225,27 @@ bis_leaflet_get_visible_child (BisLeaflet *self)
 }
 
 /**
- * bis_leaflet_set_visible_child: (attributes org.gtk.Method.set_property=visible-child)
- * @self: a leaflet
+ * bis_album_set_visible_child: (attributes org.gtk.Method.set_property=visible-child)
+ * @self: a album
  * @visible_child: the new child
  *
- * Sets the widget currently visible when the leaflet is folded.
+ * Sets the widget currently visible when the album is folded.
  *
- * The transition is determined by [property@Leaflet:transition-type] and
- * [property@Leaflet:child-transition-params]. The transition can be cancelled
+ * The transition is determined by [property@Album:transition-type] and
+ * [property@Album:child-transition-params]. The transition can be cancelled
  * by the user, in which case visible child will change back to the previously
  * visible child.
  *
  * Since: 1.0
  */
 void
-bis_leaflet_set_visible_child (BisLeaflet *self,
+bis_album_set_visible_child (BisAlbum *self,
                                GtkWidget  *visible_child)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
   gboolean contains_child;
 
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (GTK_IS_WIDGET (visible_child));
 
   page = find_page_for_widget (self, visible_child);
@@ -3258,8 +3258,8 @@ bis_leaflet_set_visible_child (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_visible_child_name: (attributes org.gtk.Method.get_property=visible-child-name)
- * @self: a leaflet
+ * bis_album_get_visible_child_name: (attributes org.gtk.Method.get_property=visible-child-name)
+ * @self: a album
  *
  * Gets the name of the currently visible child widget.
  *
@@ -3268,9 +3268,9 @@ bis_leaflet_set_visible_child (BisLeaflet *self,
  * Since: 1.0
  */
 const char *
-bis_leaflet_get_visible_child_name (BisLeaflet *self)
+bis_album_get_visible_child_name (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
 
   if (self->visible_child == NULL)
     return NULL;
@@ -3279,24 +3279,24 @@ bis_leaflet_get_visible_child_name (BisLeaflet *self)
 }
 
 /**
- * bis_leaflet_set_visible_child_name: (attributes org.gtk.Method.set_property=visible-child-name)
- * @self: a leaflet
+ * bis_album_set_visible_child_name: (attributes org.gtk.Method.set_property=visible-child-name)
+ * @self: a album
  * @name: the name of a child
  *
  * Makes the child with the name @name visible.
  *
- * See [property@Leaflet:visible-child].
+ * See [property@Album:visible-child].
  *
  * Since: 1.0
  */
 void
-bis_leaflet_set_visible_child_name (BisLeaflet *self,
+bis_album_set_visible_child_name (BisAlbum *self,
                                     const char *name)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
   gboolean contains_child;
 
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (name != NULL);
 
   page = find_page_for_name (self, name);
@@ -3308,8 +3308,8 @@ bis_leaflet_set_visible_child_name (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_transition_type: (attributes org.gtk.Method.get_property=transition-type)
- * @self: a leaflet
+ * bis_album_get_transition_type: (attributes org.gtk.Method.get_property=transition-type)
+ * @self: a album
  *
  * Gets the type of animation used for transitions between modes and children.
  *
@@ -3317,17 +3317,17 @@ bis_leaflet_set_visible_child_name (BisLeaflet *self,
  *
  * Since: 1.0
  */
-BisLeafletTransitionType
-bis_leaflet_get_transition_type (BisLeaflet *self)
+BisAlbumTransitionType
+bis_album_get_transition_type (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), BIS_LEAFLET_TRANSITION_TYPE_OVER);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), BIS_ALBUM_TRANSITION_TYPE_OVER);
 
   return self->transition_type;
 }
 
 /**
- * bis_leaflet_set_transition_type: (attributes org.gtk.Method.set_property=transition-type)
- * @self: a leaflet
+ * bis_album_set_transition_type: (attributes org.gtk.Method.set_property=transition-type)
+ * @self: a album
  * @transition: the new transition type
  *
  * Sets the type of animation used for transitions between modes and children.
@@ -3339,13 +3339,13 @@ bis_leaflet_get_transition_type (BisLeaflet *self)
  * Since: 1.0
  */
 void
-bis_leaflet_set_transition_type (BisLeaflet               *self,
-                                 BisLeafletTransitionType  transition)
+bis_album_set_transition_type (BisAlbum               *self,
+                                 BisAlbumTransitionType  transition)
 {
   GList *l;
 
-  g_return_if_fail (BIS_IS_LEAFLET (self));
-  g_return_if_fail (transition <= BIS_LEAFLET_TRANSITION_TYPE_SLIDE);
+  g_return_if_fail (BIS_IS_ALBUM (self));
+  g_return_if_fail (transition <= BIS_ALBUM_TRANSITION_TYPE_SLIDE);
 
   if (self->transition_type == transition)
     return;
@@ -3353,9 +3353,9 @@ bis_leaflet_set_transition_type (BisLeaflet               *self,
   self->transition_type = transition;
 
   for (l = self->children; l; l = l->next) {
-    BisLeafletPage *page = l->data;
+    BisAlbumPage *page = l->data;
 
-    if (self->transition_type == BIS_LEAFLET_TRANSITION_TYPE_OVER)
+    if (self->transition_type == BIS_ALBUM_TRANSITION_TYPE_OVER)
       gtk_widget_insert_before (page->widget, GTK_WIDGET (self), NULL);
     else
       gtk_widget_insert_after (page->widget, GTK_WIDGET (self), NULL);
@@ -3366,8 +3366,8 @@ bis_leaflet_set_transition_type (BisLeaflet               *self,
 }
 
 /**
- * bis_leaflet_get_mode_transition_duration: (attributes org.gtk.Method.get_property=mode-transition-duration)
- * @self: a leaflet
+ * bis_album_get_mode_transition_duration: (attributes org.gtk.Method.get_property=mode-transition-duration)
+ * @self: a album
  *
  * Gets the mode transition animation duration for @self.
  *
@@ -3376,16 +3376,16 @@ bis_leaflet_set_transition_type (BisLeaflet               *self,
  * Since: 1.0
  */
 guint
-bis_leaflet_get_mode_transition_duration (BisLeaflet *self)
+bis_album_get_mode_transition_duration (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), 0);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), 0);
 
   return self->mode_transition.duration;
 }
 
 /**
- * bis_leaflet_set_mode_transition_duration: (attributes org.gtk.Method.set_property=mode-transition-duration)
- * @self: a leaflet
+ * bis_album_set_mode_transition_duration: (attributes org.gtk.Method.set_property=mode-transition-duration)
+ * @self: a album
  * @duration: the new duration, in milliseconds
  *
  * Sets the mode transition animation duration for @self.
@@ -3393,10 +3393,10 @@ bis_leaflet_get_mode_transition_duration (BisLeaflet *self)
  * Since: 1.0
  */
 void
-bis_leaflet_set_mode_transition_duration (BisLeaflet *self,
+bis_album_set_mode_transition_duration (BisAlbum *self,
                                           guint       duration)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
 
   if (self->mode_transition.duration == duration)
     return;
@@ -3411,8 +3411,8 @@ bis_leaflet_set_mode_transition_duration (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_child_transition_params: (attributes org.gtk.Method.get_property=child-transition-params)
- * @self: a leaflet
+ * bis_album_get_child_transition_params: (attributes org.gtk.Method.get_property=child-transition-params)
+ * @self: a album
  *
  * Gets the child transition spring parameters for @self.
  *
@@ -3421,16 +3421,16 @@ bis_leaflet_set_mode_transition_duration (BisLeaflet *self,
  * Since: 1.0
  */
 BisSpringParams *
-bis_leaflet_get_child_transition_params (BisLeaflet *self)
+bis_album_get_child_transition_params (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
 
   return bis_spring_animation_get_spring_params (BIS_SPRING_ANIMATION (self->child_transition.animation));
 }
 
 /**
- * bis_leaflet_set_child_transition_params: (attributes org.gtk.Method.set_property=child-transition-params)
- * @self: a leaflet
+ * bis_album_set_child_transition_params: (attributes org.gtk.Method.set_property=child-transition-params)
+ * @self: a album
  * @params: the new parameters
  *
  * Sets the child transition spring parameters for @self.
@@ -3444,13 +3444,13 @@ bis_leaflet_get_child_transition_params (BisLeaflet *self)
  * Since: 1.0
  */
 void
-bis_leaflet_set_child_transition_params (BisLeaflet      *self,
+bis_album_set_child_transition_params (BisAlbum      *self,
                                          BisSpringParams *params)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
   g_return_if_fail (params != NULL);
 
-  if (bis_leaflet_get_child_transition_params (self) == params)
+  if (bis_album_get_child_transition_params (self) == params)
     return;
 
   bis_spring_animation_set_spring_params (BIS_SPRING_ANIMATION (self->child_transition.animation),
@@ -3460,8 +3460,8 @@ bis_leaflet_set_child_transition_params (BisLeaflet      *self,
 }
 
 /**
- * bis_leaflet_get_child_transition_running: (attributes org.gtk.Method.get_property=child-transition-running)
- * @self: a leaflet
+ * bis_album_get_child_transition_running: (attributes org.gtk.Method.get_property=child-transition-running)
+ * @self: a album
  *
  * Gets whether a child transition is currently running for @self.
  *
@@ -3470,16 +3470,16 @@ bis_leaflet_set_child_transition_params (BisLeaflet      *self,
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_child_transition_running (BisLeaflet *self)
+bis_album_get_child_transition_running (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->child_transition.transition_running;
 }
 
 /**
- * bis_leaflet_get_can_navigate_back: (attributes org.gtk.Method.get_property=can-navigate-back)
- * @self: a leaflet
+ * bis_album_get_can_navigate_back: (attributes org.gtk.Method.get_property=can-navigate-back)
+ * @self: a album
  *
  * Gets whether gestures and shortcuts for navigating backward are enabled.
  *
@@ -3488,16 +3488,16 @@ bis_leaflet_get_child_transition_running (BisLeaflet *self)
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_can_navigate_back (BisLeaflet *self)
+bis_album_get_can_navigate_back (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->child_transition.can_navigate_back;
 }
 
 /**
- * bis_leaflet_set_can_navigate_back: (attributes org.gtk.Method.set_property=can-navigate-back)
- * @self: a leaflet
+ * bis_album_set_can_navigate_back: (attributes org.gtk.Method.set_property=can-navigate-back)
+ * @self: a album
  * @can_navigate_back: the new value
  *
  * Sets whether gestures and shortcuts for navigating backward are enabled.
@@ -3515,16 +3515,16 @@ bis_leaflet_get_can_navigate_back (BisLeaflet *self)
  * If the orientation is horizontal, for right-to-left locales, gestures and
  * shortcuts are reversed.
  *
- * Only children that have [property@LeafletPage:navigatable] set to `TRUE` can
+ * Only children that have [property@AlbumPage:navigatable] set to `TRUE` can
  * be navigated to.
  *
  * Since: 1.0
  */
 void
-bis_leaflet_set_can_navigate_back (BisLeaflet *self,
+bis_album_set_can_navigate_back (BisAlbum *self,
                                    gboolean    can_navigate_back)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
 
   can_navigate_back = !!can_navigate_back;
 
@@ -3538,8 +3538,8 @@ bis_leaflet_set_can_navigate_back (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_can_navigate_forward: (attributes org.gtk.Method.get_property=can-navigate-forward)
- * @self: a leaflet
+ * bis_album_get_can_navigate_forward: (attributes org.gtk.Method.get_property=can-navigate-forward)
+ * @self: a album
  *
  * Gets whether gestures and shortcuts for navigating forward are enabled.
  *
@@ -3548,16 +3548,16 @@ bis_leaflet_set_can_navigate_back (BisLeaflet *self,
  * Since: 1.0
  */
 gboolean
-bis_leaflet_get_can_navigate_forward (BisLeaflet *self)
+bis_album_get_can_navigate_forward (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
 
   return self->child_transition.can_navigate_forward;
 }
 
 /**
- * bis_leaflet_set_can_navigate_forward: (attributes org.gtk.Method.set_property=can-navigate-forward)
- * @self: a leaflet
+ * bis_album_set_can_navigate_forward: (attributes org.gtk.Method.set_property=can-navigate-forward)
+ * @self: a album
  * @can_navigate_forward: the new value
  *
  * Sets whether gestures and shortcuts for navigating forward are enabled.
@@ -3575,16 +3575,16 @@ bis_leaflet_get_can_navigate_forward (BisLeaflet *self)
  * If the orientation is horizontal, for right-to-left locales, gestures and
  * shortcuts are reversed.
  *
- * Only children that have [property@LeafletPage:navigatable] set to `TRUE` can
+ * Only children that have [property@AlbumPage:navigatable] set to `TRUE` can
  * be navigated to.
  *
  * Since: 1.0
  */
 void
-bis_leaflet_set_can_navigate_forward (BisLeaflet *self,
+bis_album_set_can_navigate_forward (BisAlbum *self,
                                       gboolean    can_navigate_forward)
 {
-  g_return_if_fail (BIS_IS_LEAFLET (self));
+  g_return_if_fail (BIS_IS_ALBUM (self));
 
   can_navigate_forward = !!can_navigate_forward;
 
@@ -3598,30 +3598,30 @@ bis_leaflet_set_can_navigate_forward (BisLeaflet *self,
 }
 
 /**
- * bis_leaflet_get_adjacent_child:
- * @self: a leaflet
+ * bis_album_get_adjacent_child:
+ * @self: a album
  * @direction: the direction
  *
  * Finds the previous or next navigatable child.
  *
- * This will be the same child [method@Leaflet.navigate] or swipe gestures will
+ * This will be the same child [method@Album.navigate] or swipe gestures will
  * navigate to.
  *
  * If there's no child to navigate to, `NULL` will be returned instead.
  *
- * See [property@LeafletPage:navigatable].
+ * See [property@AlbumPage:navigatable].
  *
  * Returns: (nullable) (transfer none): the previous or next child
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_leaflet_get_adjacent_child (BisLeaflet             *self,
+bis_album_get_adjacent_child (BisAlbum             *self,
                                 BisNavigationDirection  direction)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
 
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
 
   page = find_swipeable_page (self, direction);
 
@@ -3629,29 +3629,29 @@ bis_leaflet_get_adjacent_child (BisLeaflet             *self,
 }
 
 /**
- * bis_leaflet_navigate:
- * @self: a leaflet
+ * bis_album_navigate:
+ * @self: a album
  * @direction: the direction
  *
  * Navigates to the previous or next child.
  *
- * The child must have the [property@LeafletPage:navigatable] property set to
+ * The child must have the [property@AlbumPage:navigatable] property set to
  * `TRUE`, otherwise it will be skipped.
  *
  * This will be the same child as returned by
- * [method@Leaflet.get_adjacent_child] or navigated to via swipe gestures.
+ * [method@Album.get_adjacent_child] or navigated to via swipe gestures.
  *
  * Returns: whether the visible child was changed
  *
  * Since: 1.0
  */
 gboolean
-bis_leaflet_navigate (BisLeaflet             *self,
+bis_album_navigate (BisAlbum             *self,
                       BisNavigationDirection  direction)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
 
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), FALSE);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), FALSE);
   g_return_val_if_fail (direction == BIS_NAVIGATION_DIRECTION_BACK ||
                         direction == BIS_NAVIGATION_DIRECTION_FORWARD, FALSE);
 
@@ -3666,27 +3666,27 @@ bis_leaflet_navigate (BisLeaflet             *self,
 }
 
 /**
- * bis_leaflet_get_child_by_name:
- * @self: a leaflet
+ * bis_album_get_child_by_name:
+ * @self: a album
  * @name: the name of the child to find
  *
  * Finds the child of @self with @name.
  *
  * Returns `NULL` if there is no child with this name.
  *
- * See [property@LeafletPage:name].
+ * See [property@AlbumPage:name].
  *
  * Returns: (transfer none) (nullable): the requested child of @self
  *
  * Since: 1.0
  */
 GtkWidget *
-bis_leaflet_get_child_by_name (BisLeaflet  *self,
+bis_album_get_child_by_name (BisAlbum  *self,
                                const char  *name)
 {
-  BisLeafletPage *page;
+  BisAlbumPage *page;
 
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
   g_return_val_if_fail (name != NULL, NULL);
 
   page = find_page_for_name (self, name);
@@ -3695,28 +3695,28 @@ bis_leaflet_get_child_by_name (BisLeaflet  *self,
 }
 
 /**
- * bis_leaflet_get_pages: (attributes org.gtk.Method.get_property=pages)
- * @self: a leaflet
+ * bis_album_get_pages: (attributes org.gtk.Method.get_property=pages)
+ * @self: a album
  *
- * Returns a [iface@Gio.ListModel] that contains the pages of the leaflet.
+ * Returns a [iface@Gio.ListModel] that contains the pages of the album.
  *
  * This can be used to keep an up-to-date view. The model also implements
  * [iface@Gtk.SelectionModel] and can be used to track and change the visible
  * page.
  *
- * Returns: (transfer full): a `GtkSelectionModel` for the leaflet's children
+ * Returns: (transfer full): a `GtkSelectionModel` for the album's children
  *
  * Since: 1.0
  */
 GtkSelectionModel *
-bis_leaflet_get_pages (BisLeaflet *self)
+bis_album_get_pages (BisAlbum *self)
 {
-  g_return_val_if_fail (BIS_IS_LEAFLET (self), NULL);
+  g_return_val_if_fail (BIS_IS_ALBUM (self), NULL);
 
   if (self->pages)
     return g_object_ref (self->pages);
 
-  self->pages = GTK_SELECTION_MODEL (bis_leaflet_pages_new (self));
+  self->pages = GTK_SELECTION_MODEL (bis_album_pages_new (self));
   g_object_add_weak_pointer (G_OBJECT (self->pages), (gpointer *) &self->pages);
 
   return self->pages;
