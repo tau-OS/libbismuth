@@ -1,4 +1,4 @@
-libbismuth_header_subdir = package_api_name
+libbismuth_header_subdir = package_subdir / package_api_name
 libbismuth_header_dir = get_option('includedir') / libbismuth_header_subdir
 
 libbismuth_resources = gnome.compile_resources(
