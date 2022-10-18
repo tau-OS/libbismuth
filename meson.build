@@ -92,9 +92,6 @@ if cc.get_id() != 'msvc'
       test_c_args += '-fstack-protector-strong'
     endif
   endif
-  if get_option('profiling')
-    test_c_args += '-pg'
-  endif
 else
   test_c_args += '-FImsvc_recommended_pragmas.h'
 endif
