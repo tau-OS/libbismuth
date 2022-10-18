@@ -1,0 +1,6 @@
+LIBBISMUTH_1_0 {
+	global:
+		bis_*;
+	local:
+		*;
+};

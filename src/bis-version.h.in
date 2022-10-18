@@ -1,0 +1,187 @@
+/*
+ * Copyright (C) 2017-2022 Purism SPC
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+#pragma once
+
+#if !defined(_BISMUTH_INSIDE) && !defined(BISMUTH_COMPILATION)
+#error "Only <bismuth.h> can be included directly."
+#endif
+
+#include <glib.h>
+
+G_BEGIN_DECLS
+
+/**
+ * BIS_MAJOR_VERSION:
+ *
+ * Bismuth major version component (e.g. 1 if the version is 1.2.3).
+ */
+#define BIS_MAJOR_VERSION              (@BIS_MAJOR_VERSION@)
+
+/**
+ * BIS_MINOR_VERSION:
+ *
+ * Bismuth minor version component (e.g. 2 if the version is 1.2.3).
+ */
+#define BIS_MINOR_VERSION              (@BIS_MINOR_VERSION@)
+
+/**
+ * BIS_MICRO_VERSION:
+ *
+ * Bismuth micro version component (e.g. 3 if the version is 1.2.3).
+ */
+#define BIS_MICRO_VERSION              (@BIS_MICRO_VERSION@)
+
+/**
+ * BIS_VERSION:
+ *
+ * Bismuth version (e.g. 1.2.3).
+ */
+#define BIS_VERSION                    (@BIS_VERSION@)
+
+/**
+ * BIS_VERSION_S:
+ *
+ * Bismuth version, encoded as a string, useful for printing and
+ * concatenation.
+ */
+#define BIS_VERSION_S                  "@BIS_VERSION@"
+
+#define BIS_ENCODE_VERSION(major,minor,micro) \
+        ((major) << 24 | (minor) << 16 | (micro) << 8)
+
+/**
+ * BIS_VERSION_HEX:
+ *
+ * Bismuth version, encoded as an hexadecimal number, useful for
+ * integer comparisons.
+ */
+#define BIS_VERSION_HEX \
+        (BIS_ENCODE_VERSION (BIS_MAJOR_VERSION, BIS_MINOR_VERSION, BIS_MICRO_VERSION))
+
+/**
+ * BIS_CHECK_VERSION:
+ * @major: required major version
+ * @minor: required minor version
+ * @micro: required micro version
+ *
+ * Compile-time version checking. Evaluates to `TRUE` if the version
+ * of Bismuth is greater than the required one.
+ */
+#define BIS_CHECK_VERSION(major,minor,micro)   \
+        (BIS_MAJOR_VERSION > (major) || \
+         (BIS_MAJOR_VERSION == (major) && BIS_MINOR_VERSION > (minor)) || \
+         (BIS_MAJOR_VERSION == (major) && BIS_MINOR_VERSION == (minor) && \
+          BIS_MICRO_VERSION >= (micro)))
+
+/**
+ * BIS_VERSION_1_1:
+ *
+ * A macro that evaluates to the 1.2 version of Bismuth, in a format
+ * that can be used by the C pre-processor.
+ *
+ * Since: 1.1
+ */
+#define BIS_VERSION_1_1 (BIS_ENCODE_VERSION (1, 1, 0))
+
+/**
+ * BIS_VERSION_1_2:
+ *
+ * A macro that evaluates to the 1.2 version of Bismuth, in a format
+ * that can be used by the C pre-processor.
+ *
+ * Since: 1.2
+ */
+#define BIS_VERSION_1_2 (BIS_ENCODE_VERSION (1, 2, 0))
+
+/**
+ * BIS_VERSION_1_3:
+ *
+ * A macro that evaluates to the 1.3 version of Bismuth, in a format
+ * that can be used by the C pre-processor.
+ *
+ * Since: 1.3
+ */
+#define BIS_VERSION_1_3 (BIS_ENCODE_VERSION (1, 3, 0))
+
+#ifndef _BIS_EXTERN
+#define _BIS_EXTERN extern
+#endif
+
+#ifndef BIS_VERSION_MAX_ALLOWED
+# define BIS_VERSION_MAX_ALLOWED BIS_VERSION_1_3
+#endif
+
+#ifndef BIS_VERSION_MIN_REQUIRED
+# define BIS_VERSION_MIN_REQUIRED BIS_VERSION_1_3
+#endif
+
+#if BIS_VERSION_MAX_ALLOWED < BIS_VERSION_1_1
+# define BIS_AVAILABLE_IN_1_1 BIS_UNAVAILABLE(1, 1)
+#else
+# define BIS_AVAILABLE_IN_1_1 _BIS_EXTERN
+#endif
+
+#if BIS_VERSION_MIN_REQUIRED >= BIS_VERSION_1_1
+# define BIS_DEPRECATED_IN_1_1             _BIS_DEPRECATED
+# define BIS_DEPRECATED_IN_1_1_FOR(f)      _BIS_DEPRECATED_FOR(f)
+# define BIS_DEPRECATED_TYPE_IN_1_1        _BIS_DEPRECATED_TYPE
+# define BIS_DEPRECATED_TYPE_IN_1_1_FOR(f) _BIS_DEPRECATED_TYPE_FOR(f)
+#else
+# define BIS_DEPRECATED_IN_1_1             _BIS_EXTERN
+# define BIS_DEPRECATED_IN_1_1_FOR(f)      _BIS_EXTERN
+# define BIS_DEPRECATED_TYPE_IN_1_1
+# define BIS_DEPRECATED_TYPE_IN_1_1_FOR(f)
+#endif
+
+#if BIS_VERSION_MAX_ALLOWED < BIS_VERSION_1_2
+# define BIS_AVAILABLE_IN_1_2 BIS_UNAVAILABLE(1, 2)
+#else
+# define BIS_AVAILABLE_IN_1_2 _BIS_EXTERN
+#endif
+
+#if BIS_VERSION_MIN_REQUIRED >= BIS_VERSION_1_2
+# define BIS_DEPRECATED_IN_1_2             _BIS_DEPRECATED
+# define BIS_DEPRECATED_IN_1_2_FOR(f)      _BIS_DEPRECATED_FOR(f)
+# define BIS_DEPRECATED_TYPE_IN_1_2        _BIS_DEPRECATED_TYPE
+# define BIS_DEPRECATED_TYPE_IN_1_2_FOR(f) _BIS_DEPRECATED_TYPE_FOR(f)
+#else
+# define BIS_DEPRECATED_IN_1_2             _BIS_EXTERN
+# define BIS_DEPRECATED_IN_1_2_FOR(f)      _BIS_EXTERN
+# define BIS_DEPRECATED_TYPE_IN_1_2
+# define BIS_DEPRECATED_TYPE_IN_1_2_FOR(f)
+#endif
+
+#if BIS_VERSION_MAX_ALLOWED < BIS_VERSION_1_3
+# define BIS_AVAILABLE_IN_1_3 BIS_UNAVAILABLE(1, 3)
+#else
+# define BIS_AVAILABLE_IN_1_3 _BIS_EXTERN
+#endif
+
+#if BIS_VERSION_MIN_REQUIRED >= BIS_VERSION_1_3
+# define BIS_DEPRECATED_IN_1_3             _BIS_DEPRECATED
+# define BIS_DEPRECATED_IN_1_3_FOR(f)      _BIS_DEPRECATED_FOR(f)
+# define BIS_DEPRECATED_TYPE_IN_1_3        _BIS_DEPRECATED_TYPE
+# define BIS_DEPRECATED_TYPE_IN_1_3_FOR(f) _BIS_DEPRECATED_TYPE_FOR(f)
+#else
+# define BIS_DEPRECATED_IN_1_3             _BIS_EXTERN
+# define BIS_DEPRECATED_IN_1_3_FOR(f)      _BIS_EXTERN
+# define BIS_DEPRECATED_TYPE_IN_1_3
+# define BIS_DEPRECATED_TYPE_IN_1_3_FOR(f)
+#endif
+
+#define BIS_UNAVAILABLE(major, minor) G_UNAVAILABLE(major, minor) _BIS_EXTERN
+
+#define BIS_AVAILABLE_IN_ALL _BIS_EXTERN
+
+BIS_AVAILABLE_IN_ALL
+guint bis_get_major_version (void) G_GNUC_CONST;
+BIS_AVAILABLE_IN_ALL
+guint bis_get_minor_version (void) G_GNUC_CONST;
+BIS_AVAILABLE_IN_ALL
+guint bis_get_micro_version (void) G_GNUC_CONST;
+
+G_END_DECLS

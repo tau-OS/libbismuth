@@ -1,0 +1,10 @@
+_build
+*.swp
+*~
+\#*#
+.\#*
+build
+.buildconfig
+.flatpak-builder
+subprojects/sassc
+subprojects/libsass
