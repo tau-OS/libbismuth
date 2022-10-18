@@ -1,8 +1,6 @@
 libbismuth_header_subdir = package_api_name
 libbismuth_header_dir = get_option('includedir') / libbismuth_header_subdir
 
-subdir('stylesheet')
-
 libbismuth_resources = gnome.compile_resources(
   'bis-resources',
   'bismuth.gresources.xml',
