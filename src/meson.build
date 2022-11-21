@@ -190,6 +190,17 @@ config_h.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
 # Symbol visibility
 config_h.set('_BIS_EXTERN', '__attribute__((visibility("default"))) extern')
 
+if target_system == 'darwin'
+  appleframework_modules = [
+    'AppKit',
+    'Foundation',
+  ]
+  libbismuth_deps += [
+    dependency('appleframeworks', modules: appleframework_modules),
+  ]
+  libbismuth_c_args += ['-xobjective-c']
+endif
+
 configure_file(
          output: 'config.h',
   configuration: config_h,
