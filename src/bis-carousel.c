@@ -1081,7 +1081,7 @@ bis_carousel_init (BisCarousel *self)
     bis_spring_animation_new (GTK_WIDGET (self), 0, 0,
                               bis_spring_params_new (1, 0.5, 500),
                               target);
-  bis_spring_animation_set_clamp (BIS_SPRING_ANIMATION (self->animation), TRUE);
+  bis_spring_animation_set_latch (BIS_SPRING_ANIMATION (self->animation), TRUE);
 
   g_signal_connect_swapped (self->animation, "done",
                             G_CALLBACK (scroll_animation_done_cb), self);

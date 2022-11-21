@@ -16,30 +16,30 @@
 
 G_BEGIN_DECLS
 
-#define BIS_TYPE_CLAMP (bis_clamp_get_type())
+#define BIS_TYPE_CLAMP (bis_latch_get_type())
 
 BIS_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (BisClamp, bis_clamp, BIS, CLAMP, GtkWidget)
+G_DECLARE_FINAL_TYPE (BisLatch, bis_latch, BIS, CLAMP, GtkWidget)
 
 BIS_AVAILABLE_IN_ALL
-GtkWidget *bis_clamp_new (void) G_GNUC_WARN_UNUSED_RESULT;
+GtkWidget *bis_latch_new (void) G_GNUC_WARN_UNUSED_RESULT;
 
 BIS_AVAILABLE_IN_ALL
-GtkWidget *bis_clamp_get_child (BisClamp  *self);
+GtkWidget *bis_latch_get_child (BisLatch  *self);
 BIS_AVAILABLE_IN_ALL
-void       bis_clamp_set_child (BisClamp  *self,
+void       bis_latch_set_child (BisLatch  *self,
                                 GtkWidget *child);
 
 BIS_AVAILABLE_IN_ALL
-int  bis_clamp_get_maximum_size (BisClamp *self);
+int  bis_latch_get_maximum_size (BisLatch *self);
 BIS_AVAILABLE_IN_ALL
-void bis_clamp_set_maximum_size (BisClamp *self,
+void bis_latch_set_maximum_size (BisLatch *self,
                                  int       maximum_size);
 
 BIS_AVAILABLE_IN_ALL
-int  bis_clamp_get_tightening_threshold (BisClamp *self);
+int  bis_latch_get_tightening_threshold (BisLatch *self);
 BIS_AVAILABLE_IN_ALL
-void bis_clamp_set_tightening_threshold (BisClamp *self,
+void bis_latch_set_tightening_threshold (BisLatch *self,
                                          int       tightening_threshold);
 
 G_END_DECLS

@@ -1592,7 +1592,7 @@ bis_lapel_init (BisLapel *self)
   self->reveal_animation =
     bis_spring_animation_new (GTK_WIDGET (self), 0, 0,
                              bis_spring_params_new (1, 0.5, 500), target);
-  bis_spring_animation_set_clamp (BIS_SPRING_ANIMATION (self->reveal_animation),
+  bis_spring_animation_set_latch (BIS_SPRING_ANIMATION (self->reveal_animation),
                                   TRUE);
 
   g_signal_connect_swapped (self->reveal_animation, "done",

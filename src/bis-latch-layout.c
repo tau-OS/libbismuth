@@ -5,7 +5,7 @@
  */
 
 #include "config.h"
-#include "bis-clamp-layout.h"
+#include "bis-latch-layout.h"
 
 #include <math.h>
 
@@ -14,20 +14,20 @@
 #include "bis-macros-private.h"
 
 /**
- * BisClampLayout:
+ * BisLatchLayout:
  *
  * A layout manager constraining its children to a given size.
  *
  * <picture>
- *   <source srcset="clamp-wide-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="clamp-wide.png" alt="clamp-wide">
+ *   <source srcset="latch-wide-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="latch-wide.png" alt="latch-wide">
  * </picture>
  * <picture>
- *   <source srcset="clamp-narrow-dark.png" media="(prefers-color-scheme: dark)">
- *   <img src="clamp-narrow.png" alt="clamp-narrow">
+ *   <source srcset="latch-narrow-dark.png" media="(prefers-color-scheme: dark)">
+ *   <img src="latch-narrow.png" alt="latch-narrow">
  * </picture>
  *
- * `BisClampLayout` constraints the size of the widgets it contains to a given
+ * `BisLatchLayout` constraints the size of the widgets it contains to a given
  * maximum size. It will constrain the width if it is horizontal, or the height
  * if it is vertical. The expansion of the children from their minimum to their
  * maximum size is eased out for a smooth transition.
@@ -55,7 +55,7 @@ enum {
   LAST_PROP = PROP_TIGHTENING_THRESHOLD + 1,
 };
 
-struct _BisClampLayout
+struct _BisLatchLayout
 {
   GtkLayoutManager parent_instance;
 
@@ -67,11 +67,11 @@ struct _BisClampLayout
 
 static GParamSpec *props[LAST_PROP];
 
-G_DEFINE_FINAL_TYPE_WITH_CODE (BisClampLayout, bis_clamp_layout, GTK_TYPE_LAYOUT_MANAGER,
+G_DEFINE_FINAL_TYPE_WITH_CODE (BisLatchLayout, bis_latch_layout, GTK_TYPE_LAYOUT_MANAGER,
                                G_IMPLEMENT_INTERFACE (GTK_TYPE_ORIENTABLE, NULL))
 
 static void
-set_orientation (BisClampLayout *self,
+set_orientation (BisLatchLayout *self,
                  GtkOrientation  orientation)
 {
   if (self->orientation == orientation)
@@ -85,19 +85,19 @@ set_orientation (BisClampLayout *self,
 }
 
 static void
-bis_clamp_layout_get_property (GObject    *object,
+bis_latch_layout_get_property (GObject    *object,
                                guint       prop_id,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  BisClampLayout *self = BIS_CLAMP_LAYOUT (object);
+  BisLatchLayout *self = BIS_CLAMP_LAYOUT (object);
 
   switch (prop_id) {
   case PROP_MAXIMUM_SIZE:
-    g_value_set_int (value, bis_clamp_layout_get_maximum_size (self));
+    g_value_set_int (value, bis_latch_layout_get_maximum_size (self));
     break;
   case PROP_TIGHTENING_THRESHOLD:
-    g_value_set_int (value, bis_clamp_layout_get_tightening_threshold (self));
+    g_value_set_int (value, bis_latch_layout_get_tightening_threshold (self));
     break;
   case PROP_ORIENTATION:
     g_value_set_enum (value, self->orientation);
@@ -108,19 +108,19 @@ bis_clamp_layout_get_property (GObject    *object,
 }
 
 static void
-bis_clamp_layout_set_property (GObject      *object,
+bis_latch_layout_set_property (GObject      *object,
                                guint         prop_id,
                                const GValue *value,
                                GParamSpec   *pspec)
 {
-  BisClampLayout *self = BIS_CLAMP_LAYOUT (object);
+  BisLatchLayout *self = BIS_CLAMP_LAYOUT (object);
 
   switch (prop_id) {
   case PROP_MAXIMUM_SIZE:
-    bis_clamp_layout_set_maximum_size (self, g_value_get_int (value));
+    bis_latch_layout_set_maximum_size (self, g_value_get_int (value));
     break;
   case PROP_TIGHTENING_THRESHOLD:
-    bis_clamp_layout_set_tightening_threshold (self, g_value_get_int (value));
+    bis_latch_layout_set_tightening_threshold (self, g_value_get_int (value));
     break;
   case PROP_ORIENTATION:
     set_orientation (self, g_value_get_enum (value));
@@ -139,7 +139,7 @@ inverse_lerp (double a,
 }
 
 static int
-clamp_size_from_child (BisClampLayout *self,
+latch_size_from_child (BisLatchLayout *self,
                        int             min,
                        int             nat)
 {
@@ -164,7 +164,7 @@ clamp_size_from_child (BisClampLayout *self,
 }
 
 static int
-child_size_from_clamp (BisClampLayout *self,
+child_size_from_latch (BisLatchLayout *self,
                        GtkWidget      *child,
                        int             for_size,
                        int            *child_maximum,
@@ -199,10 +199,10 @@ child_size_from_clamp (BisClampLayout *self,
 }
 
 static GtkSizeRequestMode
-bis_clamp_layout_get_request_mode (GtkLayoutManager *manager,
+bis_latch_layout_get_request_mode (GtkLayoutManager *manager,
                                    GtkWidget        *widget)
 {
-  BisClampLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
 
   return self->orientation == GTK_ORIENTATION_HORIZONTAL ?
     GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH :
@@ -210,7 +210,7 @@ bis_clamp_layout_get_request_mode (GtkLayoutManager *manager,
 }
 
 static void
-bis_clamp_layout_measure (GtkLayoutManager *manager,
+bis_latch_layout_measure (GtkLayoutManager *manager,
                           GtkWidget        *widget,
                           GtkOrientation    orientation,
                           int               for_size,
@@ -219,7 +219,7 @@ bis_clamp_layout_measure (GtkLayoutManager *manager,
                           int              *minimum_baseline,
                           int              *natural_baseline)
 {
-  BisClampLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
   GtkWidget *child;
 
   for (child = gtk_widget_get_first_child (widget);
@@ -238,9 +238,9 @@ bis_clamp_layout_measure (GtkLayoutManager *manager,
                           &child_min, &child_nat,
                           &child_min_baseline, &child_nat_baseline);
 
-      child_nat = clamp_size_from_child (self, child_min, child_nat);
+      child_nat = latch_size_from_child (self, child_min, child_nat);
     } else {
-      int child_size = child_size_from_clamp (self, child, for_size, NULL, NULL);
+      int child_size = child_size_from_latch (self, child, for_size, NULL, NULL);
 
       gtk_widget_measure (child, orientation, child_size,
                           &child_min, &child_nat,
@@ -258,13 +258,13 @@ bis_clamp_layout_measure (GtkLayoutManager *manager,
 }
 
 static void
-bis_clamp_layout_allocate (GtkLayoutManager *manager,
+bis_latch_layout_allocate (GtkLayoutManager *manager,
                            GtkWidget        *widget,
                            int               width,
                            int               height,
                            int               baseline)
 {
-  BisClampLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
   GtkWidget *child;
 
   for (child = gtk_widget_get_first_child (widget);
@@ -272,7 +272,7 @@ bis_clamp_layout_allocate (GtkLayoutManager *manager,
        child = gtk_widget_get_next_sibling (child)) {
     GtkAllocation child_allocation;
     int child_maximum = 0, lower_threshold = 0;
-    int child_clamped_size;
+    int child_latched_size;
 
     if (!gtk_widget_should_layout (child)) {
       gtk_widget_remove_css_class (child, "small");
@@ -283,26 +283,26 @@ bis_clamp_layout_allocate (GtkLayoutManager *manager,
     }
 
     if (self->orientation == GTK_ORIENTATION_HORIZONTAL) {
-      child_allocation.width = child_size_from_clamp (self, child, width,
+      child_allocation.width = child_size_from_latch (self, child, width,
                                                       &child_maximum,
                                                       &lower_threshold);
       child_allocation.height = height;
 
-      child_clamped_size = child_allocation.width;
+      child_latched_size = child_allocation.width;
     } else {
       child_allocation.width = width;
-      child_allocation.height = child_size_from_clamp (self, child, height,
+      child_allocation.height = child_size_from_latch (self, child, height,
                                                        &child_maximum,
                                                        &lower_threshold);
 
-      child_clamped_size = child_allocation.height;
+      child_latched_size = child_allocation.height;
     }
 
-    if (child_clamped_size >= child_maximum) {
+    if (child_latched_size >= child_maximum) {
       gtk_widget_remove_css_class (child, "small");
       gtk_widget_remove_css_class (child, "medium");
       gtk_widget_add_css_class (child, "large");
-    } else if (child_clamped_size <= lower_threshold) {
+    } else if (child_latched_size <= lower_threshold) {
       gtk_widget_add_css_class (child, "small");
       gtk_widget_remove_css_class (child, "medium");
       gtk_widget_remove_css_class (child, "large");
@@ -326,24 +326,24 @@ bis_clamp_layout_allocate (GtkLayoutManager *manager,
 }
 
 static void
-bis_clamp_layout_class_init (BisClampLayoutClass *klass)
+bis_latch_layout_class_init (BisLatchLayoutClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkLayoutManagerClass *layout_manager_class = GTK_LAYOUT_MANAGER_CLASS (klass);
 
-  object_class->get_property = bis_clamp_layout_get_property;
-  object_class->set_property = bis_clamp_layout_set_property;
+  object_class->get_property = bis_latch_layout_get_property;
+  object_class->set_property = bis_latch_layout_set_property;
 
-  layout_manager_class->get_request_mode = bis_clamp_layout_get_request_mode;
-  layout_manager_class->measure = bis_clamp_layout_measure;
-  layout_manager_class->allocate = bis_clamp_layout_allocate;
+  layout_manager_class->get_request_mode = bis_latch_layout_get_request_mode;
+  layout_manager_class->measure = bis_latch_layout_measure;
+  layout_manager_class->allocate = bis_latch_layout_allocate;
 
   g_object_class_override_property (object_class,
                                     PROP_ORIENTATION,
                                     "orientation");
 
   /**
-   * BisClampLayout:maximum-size: (attributes org.gtk.Property.get=bis_clamp_layout_get_maximum_size org.gtk.Property.set=bis_clamp_layout_set_maximum_size)
+   * BisLatchLayout:maximum-size: (attributes org.gtk.Property.get=bis_latch_layout_get_maximum_size org.gtk.Property.set=bis_latch_layout_set_maximum_size)
    *
    * The maximum size to allocate to the children.
    *
@@ -358,9 +358,9 @@ bis_clamp_layout_class_init (BisClampLayoutClass *klass)
                       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisClampLayout:tightening-threshold: (attributes org.gtk.Property.get=bis_clamp_layout_get_tightening_threshold org.gtk.Property.set=bis_clamp_layout_set_tightening_threshold)
+   * BisLatchLayout:tightening-threshold: (attributes org.gtk.Property.get=bis_latch_layout_get_tightening_threshold org.gtk.Property.set=bis_latch_layout_set_tightening_threshold)
    *
-   * The size above which the children are clamped.
+   * The size above which the children are latched.
    *
    * Starting from this size, the layout will tighten its grip on the children,
    * slowly allocating less and less of the available size up to the maximum
@@ -386,30 +386,30 @@ bis_clamp_layout_class_init (BisClampLayoutClass *klass)
 }
 
 static void
-bis_clamp_layout_init (BisClampLayout *self)
+bis_latch_layout_init (BisLatchLayout *self)
 {
   self->maximum_size = 600;
   self->tightening_threshold = 400;
 }
 
 /**
- * bis_clamp_layout_new:
+ * bis_latch_layout_new:
  *
- * Creates a new `BisClampLayout`.
+ * Creates a new `BisLatchLayout`.
  *
- * Returns: the newly created `BisClampLayout`
+ * Returns: the newly created `BisLatchLayout`
  *
  * Since: 1.0
  */
 GtkLayoutManager *
-bis_clamp_layout_new (void)
+bis_latch_layout_new (void)
 {
   return g_object_new (BIS_TYPE_CLAMP_LAYOUT, NULL);
 }
 
 /**
- * bis_clamp_layout_get_maximum_size: (attributes org.gtk.Method.get_property=maximum-size)
- * @self: a clamp layout
+ * bis_latch_layout_get_maximum_size: (attributes org.gtk.Method.get_property=maximum-size)
+ * @self: a latch layout
  *
  * Gets the maximum size allocated to the children.
  *
@@ -418,7 +418,7 @@ bis_clamp_layout_new (void)
  * Since: 1.0
  */
 int
-bis_clamp_layout_get_maximum_size (BisClampLayout *self)
+bis_latch_layout_get_maximum_size (BisLatchLayout *self)
 {
   g_return_val_if_fail (BIS_IS_CLAMP_LAYOUT (self), 0);
 
@@ -426,8 +426,8 @@ bis_clamp_layout_get_maximum_size (BisClampLayout *self)
 }
 
 /**
- * bis_clamp_layout_set_maximum_size: (attributes org.gtk.Method.set_property=maximum-size)
- * @self: a clamp layout
+ * bis_latch_layout_set_maximum_size: (attributes org.gtk.Method.set_property=maximum-size)
+ * @self: a latch layout
  * @maximum_size: the maximum size
  *
  * Sets the maximum size allocated to the children.
@@ -437,7 +437,7 @@ bis_clamp_layout_get_maximum_size (BisClampLayout *self)
  * Since: 1.0
  */
 void
-bis_clamp_layout_set_maximum_size (BisClampLayout *self,
+bis_latch_layout_set_maximum_size (BisLatchLayout *self,
                                    int             maximum_size)
 {
   g_return_if_fail (BIS_IS_CLAMP_LAYOUT (self));
@@ -453,17 +453,17 @@ bis_clamp_layout_set_maximum_size (BisClampLayout *self,
 }
 
 /**
- * bis_clamp_layout_get_tightening_threshold: (attributes org.gtk.Method.get_property=tightening-threshold)
- * @self: a clamp layout
+ * bis_latch_layout_get_tightening_threshold: (attributes org.gtk.Method.get_property=tightening-threshold)
+ * @self: a latch layout
  *
- * Gets the size above which the children are clamped.
+ * Gets the size above which the children are latched.
  *
- * Returns: the size above which the children are clamped
+ * Returns: the size above which the children are latched
  *
  * Since: 1.0
  */
 int
-bis_clamp_layout_get_tightening_threshold (BisClampLayout *self)
+bis_latch_layout_get_tightening_threshold (BisLatchLayout *self)
 {
   g_return_val_if_fail (BIS_IS_CLAMP_LAYOUT (self), 0);
 
@@ -471,11 +471,11 @@ bis_clamp_layout_get_tightening_threshold (BisClampLayout *self)
 }
 
 /**
- * bis_clamp_layout_set_tightening_threshold: (attributes org.gtk.Method.set_property=tightening-threshold)
- * @self: a clamp layout
+ * bis_latch_layout_set_tightening_threshold: (attributes org.gtk.Method.set_property=tightening-threshold)
+ * @self: a latch layout
  * @tightening_threshold: the tightening threshold
  *
- * Sets the size above which the children are clamped.
+ * Sets the size above which the children are latched.
  *
  * Starting from this size, the layout will tighten its grip on the children,
  * slowly allocating less and less of the available size up to the maximum
@@ -493,7 +493,7 @@ bis_clamp_layout_get_tightening_threshold (BisClampLayout *self)
  * Since: 1.0
  */
 void
-bis_clamp_layout_set_tightening_threshold (BisClampLayout *self,
+bis_latch_layout_set_tightening_threshold (BisLatchLayout *self,
                                            int             tightening_threshold)
 {
   g_return_if_fail (BIS_IS_CLAMP_LAYOUT (self));

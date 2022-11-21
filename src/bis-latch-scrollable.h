@@ -16,30 +16,30 @@
 
 G_BEGIN_DECLS
 
-#define BIS_TYPE_CLAMP_SCROLLABLE (bis_clamp_scrollable_get_type())
+#define BIS_TYPE_CLAMP_SCROLLABLE (bis_latch_scrollable_get_type())
 
 BIS_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (BisClampScrollable, bis_clamp_scrollable, BIS, CLAMP_SCROLLABLE, GtkWidget)
+G_DECLARE_FINAL_TYPE (BisLatchScrollable, bis_latch_scrollable, BIS, CLAMP_SCROLLABLE, GtkWidget)
 
 BIS_AVAILABLE_IN_ALL
-GtkWidget *bis_clamp_scrollable_new (void) G_GNUC_WARN_UNUSED_RESULT;
+GtkWidget *bis_latch_scrollable_new (void) G_GNUC_WARN_UNUSED_RESULT;
 
 BIS_AVAILABLE_IN_ALL
-GtkWidget *bis_clamp_scrollable_get_child (BisClampScrollable *self);
+GtkWidget *bis_latch_scrollable_get_child (BisLatchScrollable *self);
 BIS_AVAILABLE_IN_ALL
-void       bis_clamp_scrollable_set_child (BisClampScrollable *self,
+void       bis_latch_scrollable_set_child (BisLatchScrollable *self,
                                            GtkWidget          *child);
 
 BIS_AVAILABLE_IN_ALL
-int  bis_clamp_scrollable_get_maximum_size (BisClampScrollable *self);
+int  bis_latch_scrollable_get_maximum_size (BisLatchScrollable *self);
 BIS_AVAILABLE_IN_ALL
-void bis_clamp_scrollable_set_maximum_size (BisClampScrollable *self,
+void bis_latch_scrollable_set_maximum_size (BisLatchScrollable *self,
                                             int                 maximum_size);
 
 BIS_AVAILABLE_IN_ALL
-int  bis_clamp_scrollable_get_tightening_threshold (BisClampScrollable *self);
+int  bis_latch_scrollable_get_tightening_threshold (BisLatchScrollable *self);
 BIS_AVAILABLE_IN_ALL
-void bis_clamp_scrollable_set_tightening_threshold (BisClampScrollable *self,
+void bis_latch_scrollable_set_tightening_threshold (BisLatchScrollable *self,
                                                     int                 tightening_threshold);
 
 G_END_DECLS

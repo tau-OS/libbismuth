@@ -62,10 +62,10 @@ void   bis_spring_animation_set_epsilon (BisSpringAnimation *self,
                                          double              epsilon);
 
 BIS_AVAILABLE_IN_ALL
-gboolean bis_spring_animation_get_clamp (BisSpringAnimation *self);
+gboolean bis_spring_animation_get_latch (BisSpringAnimation *self);
 BIS_AVAILABLE_IN_ALL
-void     bis_spring_animation_set_clamp (BisSpringAnimation *self,
-                                         gboolean            clamp);
+void     bis_spring_animation_set_latch (BisSpringAnimation *self,
+                                         gboolean            latch);
 
 BIS_AVAILABLE_IN_ALL
 guint bis_spring_animation_get_estimated_duration (BisSpringAnimation *self);

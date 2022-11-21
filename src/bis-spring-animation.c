@@ -30,7 +30,7 @@
  * rest - when the amplitude of the oscillations becomes smaller than
  * [property@SpringAnimation:epsilon], or immediately when it reaches
  * [property@SpringAnimation:value-to] if
- * [property@SpringAnimation:clamp] is set to `TRUE`. The estimated duration can
+ * [property@SpringAnimation:latch] is set to `TRUE`. The estimated duration can
  * be obtained with [property@SpringAnimation:estimated-duration].
  *
  * Due to the nature of spring-driven motion the animation can overshoot
@@ -39,7 +39,7 @@
  * See [struct@SpringParams] for more information about specific damping ratio
  * values.
  *
- * If [property@SpringAnimation:clamp] is `TRUE`, the animation will abruptly
+ * If [property@SpringAnimation:latch] is `TRUE`, the animation will abruptly
  * end as soon as it reaches the final value, preventing overshooting.
  *
  * Animations can have an initial velocity value, set via
@@ -65,7 +65,7 @@ struct _BisSpringAnimation
   double initial_velocity;
   double velocity;
   double epsilon;
-  gboolean clamp;
+  gboolean latch;
 
   guint estimated_duration; /*ms*/
 };
@@ -185,7 +185,7 @@ calculate_duration (BisSpringAnimation *self)
   if (beta <= 0)
     return BIS_DURATION_INFINITE;
 
-  if (self->clamp) {
+  if (self->latch) {
     if (G_APPROX_VALUE (self->value_to, self->value_from, FLT_EPSILON))
       return 0;
 
@@ -322,7 +322,7 @@ bis_spring_animation_get_property (GObject    *object,
     break;
 
   case PROP_CLAMP:
-    g_value_set_boolean (value, bis_spring_animation_get_clamp (self));
+    g_value_set_boolean (value, bis_spring_animation_get_latch (self));
     break;
 
   case PROP_ESTIMATED_DURATION:
@@ -368,7 +368,7 @@ bis_spring_animation_set_property (GObject      *object,
     break;
 
   case PROP_CLAMP:
-    bis_spring_animation_set_clamp (self, g_value_get_boolean (value));
+    bis_spring_animation_set_latch (self, g_value_get_boolean (value));
     break;
 
   default:
@@ -478,9 +478,9 @@ bis_spring_animation_class_init (BisSpringAnimationClass *klass)
                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   /**
-   * BisSpringAnimation:clamp: (attributes org.gtk.Property.get=bis_spring_animation_get_clamp org.gtk.Property.set=bis_spring_animation_set_clamp)
+   * BisSpringAnimation:latch: (attributes org.gtk.Property.get=bis_spring_animation_get_latch org.gtk.Property.set=bis_spring_animation_set_latch)
    *
-   * Whether the animation should be clamped.
+   * Whether the animation should be latched.
    *
    * If set to `TRUE`, the animation will abruptly end as soon as it reaches the
    * final value, preventing overshooting.
@@ -491,7 +491,7 @@ bis_spring_animation_class_init (BisSpringAnimationClass *klass)
    * Since: 1.0
    */
   props[PROP_CLAMP] =
-    g_param_spec_boolean ("clamp", NULL, NULL,
+    g_param_spec_boolean ("latch", NULL, NULL,
                           FALSE,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -816,29 +816,29 @@ bis_spring_animation_set_epsilon (BisSpringAnimation *self,
 }
 
 /**
- * bis_spring_animation_get_clamp: (attributes org.gtk.Method.get_property=clamp)
+ * bis_spring_animation_get_latch: (attributes org.gtk.Method.get_property=latch)
  * @self: a spring animation
  *
- * Gets whether @self should be clamped.
+ * Gets whether @self should be latched.
  *
- * Returns: whether @self is clamped
+ * Returns: whether @self is latched
  *
  * Since: 1.0
  */
 gboolean
-bis_spring_animation_get_clamp (BisSpringAnimation *self)
+bis_spring_animation_get_latch (BisSpringAnimation *self)
 {
   g_return_val_if_fail (BIS_IS_SPRING_ANIMATION (self), FALSE);
 
-  return self->clamp;
+  return self->latch;
 }
 
 /**
- * bis_spring_animation_set_clamp: (attributes org.gtk.Method.set_property=clamp)
+ * bis_spring_animation_set_latch: (attributes org.gtk.Method.set_property=latch)
  * @self: a spring animation
- * @clamp: the new value
+ * @latch: the new value
  *
- * Sets whether @self should be clamped.
+ * Sets whether @self should be latched.
  *
  * If set to `TRUE`, the animation will abruptly end as soon as it reaches the
  * final value, preventing overshooting.
@@ -849,15 +849,15 @@ bis_spring_animation_get_clamp (BisSpringAnimation *self)
  * Since: 1.0
  */
 void
-bis_spring_animation_set_clamp (BisSpringAnimation *self,
-                                gboolean            clamp)
+bis_spring_animation_set_latch (BisSpringAnimation *self,
+                                gboolean            latch)
 {
   g_return_if_fail (BIS_IS_SPRING_ANIMATION (self));
 
-  if (self->clamp == clamp)
+  if (self->latch == latch)
     return;
 
-  self->clamp = clamp;
+  self->latch = latch;
 
   estimate_duration (self);
 
