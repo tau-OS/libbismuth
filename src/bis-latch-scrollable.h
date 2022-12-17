@@ -16,10 +16,10 @@
 
 G_BEGIN_DECLS
 
-#define BIS_TYPE_CLAMP_SCROLLABLE (bis_latch_scrollable_get_type())
+#define BIS_TYPE_LATCH_SCROLLABLE (bis_latch_scrollable_get_type())
 
 BIS_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (BisLatchScrollable, bis_latch_scrollable, BIS, CLAMP_SCROLLABLE, GtkWidget)
+G_DECLARE_FINAL_TYPE (BisLatchScrollable, bis_latch_scrollable, BIS, LATCH_SCROLLABLE, GtkWidget)
 
 BIS_AVAILABLE_IN_ALL
 GtkWidget *bis_latch_scrollable_new (void) G_GNUC_WARN_UNUSED_RESULT;
