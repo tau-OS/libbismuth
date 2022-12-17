@@ -141,7 +141,7 @@ bis_latch_scrollable_get_property (GObject    *object,
                                    GValue     *value,
                                    GParamSpec *pspec)
 {
-  BisLatchScrollable *self = BIS_CLAMP_SCROLLABLE (object);
+  BisLatchScrollable *self = BIS_LATCH_SCROLLABLE (object);
 
   switch (prop_id) {
   case PROP_CHILD:
@@ -179,7 +179,7 @@ bis_latch_scrollable_set_property (GObject      *object,
                                    const GValue *value,
                                    GParamSpec   *pspec)
 {
-  BisLatchScrollable *self = BIS_CLAMP_SCROLLABLE (object);
+  BisLatchScrollable *self = BIS_LATCH_SCROLLABLE (object);
 
   switch (prop_id) {
   case PROP_CHILD:
@@ -214,7 +214,7 @@ bis_latch_scrollable_set_property (GObject      *object,
 static void
 bis_latch_scrollable_dispose (GObject *object)
 {
-  BisLatchScrollable *self = BIS_CLAMP_SCROLLABLE (object);
+  BisLatchScrollable *self = BIS_LATCH_SCROLLABLE (object);
 
   bis_latch_scrollable_set_child (self, NULL);
 
@@ -306,7 +306,7 @@ bis_latch_scrollable_class_init (BisLatchScrollableClass *klass)
 
   g_object_class_install_properties (object_class, LAST_PROP, props);
 
-  gtk_widget_class_set_layout_manager_type (widget_class, BIS_TYPE_CLAMP_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (widget_class, BIS_TYPE_LATCH_LAYOUT);
   gtk_widget_class_set_css_name (widget_class, "latch");
 }
 
@@ -322,7 +322,7 @@ bis_latch_scrollable_buildable_add_child (GtkBuildable *buildable,
                                           const char   *type)
 {
   if (GTK_IS_WIDGET (child))
-    bis_latch_scrollable_set_child (BIS_CLAMP_SCROLLABLE (buildable), GTK_WIDGET (child));
+    bis_latch_scrollable_set_child (BIS_LATCH_SCROLLABLE (buildable), GTK_WIDGET (child));
   else
     parent_buildable_iface->add_child (buildable, builder, child, type);
 }
@@ -347,7 +347,7 @@ bis_latch_scrollable_buildable_init (GtkBuildableIface *iface)
 GtkWidget *
 bis_latch_scrollable_new (void)
 {
-  return g_object_new (BIS_TYPE_CLAMP_SCROLLABLE, NULL);
+  return g_object_new (BIS_TYPE_LATCH_SCROLLABLE, NULL);
 }
 
 /**
@@ -363,7 +363,7 @@ bis_latch_scrollable_new (void)
 GtkWidget *
 bis_latch_scrollable_get_child (BisLatchScrollable *self)
 {
-  g_return_val_if_fail (BIS_IS_CLAMP_SCROLLABLE (self), NULL);
+  g_return_val_if_fail (BIS_IS_LATCH_SCROLLABLE (self), NULL);
 
   return self->child;
 }
@@ -381,7 +381,7 @@ void
 bis_latch_scrollable_set_child (BisLatchScrollable *self,
                                 GtkWidget          *child)
 {
-  g_return_if_fail (BIS_IS_CLAMP_SCROLLABLE (self));
+  g_return_if_fail (BIS_IS_LATCH_SCROLLABLE (self));
   g_return_if_fail (child == NULL || GTK_IS_WIDGET (child));
 
   if (self->child == child)
@@ -437,9 +437,9 @@ bis_latch_scrollable_get_maximum_size (BisLatchScrollable *self)
 {
   BisLatchLayout *layout;
 
-  g_return_val_if_fail (BIS_IS_CLAMP_SCROLLABLE (self), 0);
+  g_return_val_if_fail (BIS_IS_LATCH_SCROLLABLE (self), 0);
 
-  layout = BIS_CLAMP_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
+  layout = BIS_LATCH_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
 
   return bis_latch_layout_get_maximum_size (layout);
 }
@@ -461,9 +461,9 @@ bis_latch_scrollable_set_maximum_size (BisLatchScrollable *self,
 {
   BisLatchLayout *layout;
 
-  g_return_if_fail (BIS_IS_CLAMP_SCROLLABLE (self));
+  g_return_if_fail (BIS_IS_LATCH_SCROLLABLE (self));
 
-  layout = BIS_CLAMP_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
+  layout = BIS_LATCH_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
 
   if (bis_latch_layout_get_maximum_size (layout) == maximum_size)
     return;
@@ -488,9 +488,9 @@ bis_latch_scrollable_get_tightening_threshold (BisLatchScrollable *self)
 {
   BisLatchLayout *layout;
 
-  g_return_val_if_fail (BIS_IS_CLAMP_SCROLLABLE (self), 0);
+  g_return_val_if_fail (BIS_IS_LATCH_SCROLLABLE (self), 0);
 
-  layout = BIS_CLAMP_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
+  layout = BIS_LATCH_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
 
   return bis_latch_layout_get_tightening_threshold (layout);
 }
@@ -523,9 +523,9 @@ bis_latch_scrollable_set_tightening_threshold (BisLatchScrollable *self,
 {
   BisLatchLayout *layout;
 
-  g_return_if_fail (BIS_IS_CLAMP_SCROLLABLE (self));
+  g_return_if_fail (BIS_IS_LATCH_SCROLLABLE (self));
 
-  layout = BIS_CLAMP_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
+  layout = BIS_LATCH_LAYOUT (gtk_widget_get_layout_manager (GTK_WIDGET (self)));
 
   if (bis_latch_layout_get_tightening_threshold (layout) == tightening_threshold)
     return;
