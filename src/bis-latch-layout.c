@@ -90,7 +90,7 @@ bis_latch_layout_get_property (GObject    *object,
                                GValue     *value,
                                GParamSpec *pspec)
 {
-  BisLatchLayout *self = BIS_CLAMP_LAYOUT (object);
+  BisLatchLayout *self = BIS_LATCH_LAYOUT (object);
 
   switch (prop_id) {
   case PROP_MAXIMUM_SIZE:
@@ -113,7 +113,7 @@ bis_latch_layout_set_property (GObject      *object,
                                const GValue *value,
                                GParamSpec   *pspec)
 {
-  BisLatchLayout *self = BIS_CLAMP_LAYOUT (object);
+  BisLatchLayout *self = BIS_LATCH_LAYOUT (object);
 
   switch (prop_id) {
   case PROP_MAXIMUM_SIZE:
@@ -202,7 +202,7 @@ static GtkSizeRequestMode
 bis_latch_layout_get_request_mode (GtkLayoutManager *manager,
                                    GtkWidget        *widget)
 {
-  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_LATCH_LAYOUT (manager);
 
   return self->orientation == GTK_ORIENTATION_HORIZONTAL ?
     GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH :
@@ -219,7 +219,7 @@ bis_latch_layout_measure (GtkLayoutManager *manager,
                           int              *minimum_baseline,
                           int              *natural_baseline)
 {
-  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_LATCH_LAYOUT (manager);
   GtkWidget *child;
 
   for (child = gtk_widget_get_first_child (widget);
@@ -264,7 +264,7 @@ bis_latch_layout_allocate (GtkLayoutManager *manager,
                            int               height,
                            int               baseline)
 {
-  BisLatchLayout *self = BIS_CLAMP_LAYOUT (manager);
+  BisLatchLayout *self = BIS_LATCH_LAYOUT (manager);
   GtkWidget *child;
 
   for (child = gtk_widget_get_first_child (widget);
@@ -404,7 +404,7 @@ bis_latch_layout_init (BisLatchLayout *self)
 GtkLayoutManager *
 bis_latch_layout_new (void)
 {
-  return g_object_new (BIS_TYPE_CLAMP_LAYOUT, NULL);
+  return g_object_new (BIS_TYPE_LATCH_LAYOUT, NULL);
 }
 
 /**
@@ -420,7 +420,7 @@ bis_latch_layout_new (void)
 int
 bis_latch_layout_get_maximum_size (BisLatchLayout *self)
 {
-  g_return_val_if_fail (BIS_IS_CLAMP_LAYOUT (self), 0);
+  g_return_val_if_fail (BIS_IS_LATCH_LAYOUT (self), 0);
 
   return self->maximum_size;
 }
@@ -440,7 +440,7 @@ void
 bis_latch_layout_set_maximum_size (BisLatchLayout *self,
                                    int             maximum_size)
 {
-  g_return_if_fail (BIS_IS_CLAMP_LAYOUT (self));
+  g_return_if_fail (BIS_IS_LATCH_LAYOUT (self));
 
   if (self->maximum_size == maximum_size)
     return;
@@ -465,7 +465,7 @@ bis_latch_layout_set_maximum_size (BisLatchLayout *self,
 int
 bis_latch_layout_get_tightening_threshold (BisLatchLayout *self)
 {
-  g_return_val_if_fail (BIS_IS_CLAMP_LAYOUT (self), 0);
+  g_return_val_if_fail (BIS_IS_LATCH_LAYOUT (self), 0);
 
   return self->tightening_threshold;
 }
@@ -496,7 +496,7 @@ void
 bis_latch_layout_set_tightening_threshold (BisLatchLayout *self,
                                            int             tightening_threshold)
 {
-  g_return_if_fail (BIS_IS_CLAMP_LAYOUT (self));
+  g_return_if_fail (BIS_IS_LATCH_LAYOUT (self));
 
   if (self->tightening_threshold == tightening_threshold)
     return;
