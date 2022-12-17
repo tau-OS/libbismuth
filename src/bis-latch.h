@@ -16,10 +16,10 @@
 
 G_BEGIN_DECLS
 
-#define BIS_TYPE_CLAMP (bis_latch_get_type())
+#define BIS_TYPE_LATCH (bis_latch_get_type())
 
 BIS_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (BisLatch, bis_latch, BIS, CLAMP, GtkWidget)
+G_DECLARE_FINAL_TYPE (BisLatch, bis_latch, BIS, LATCH, GtkWidget)
 
 BIS_AVAILABLE_IN_ALL
 GtkWidget *bis_latch_new (void) G_GNUC_WARN_UNUSED_RESULT;
