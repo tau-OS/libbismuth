@@ -16,10 +16,10 @@
 
 G_BEGIN_DECLS
 
-#define BIS_TYPE_CLAMP_LAYOUT (bis_latch_layout_get_type())
+#define BIS_TYPE_LATCH_LAYOUT (bis_latch_layout_get_type())
 
 BIS_AVAILABLE_IN_ALL
-G_DECLARE_FINAL_TYPE (BisLatchLayout, bis_latch_layout, BIS, CLAMP_LAYOUT, GtkLayoutManager)
+G_DECLARE_FINAL_TYPE (BisLatchLayout, bis_latch_layout, BIS, LATCH_LAYOUT, GtkLayoutManager)
 
 BIS_AVAILABLE_IN_ALL
 GtkLayoutManager *bis_latch_layout_new (void) G_GNUC_WARN_UNUSED_RESULT;
