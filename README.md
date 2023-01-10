@@ -1,3 +1,5 @@
+<img align="left" style="vertical-align: middle" width="120" height="120" src="Bismuth.png">
+
 # Bismuth
 
 Based on libadwaita responsive widgets, without all the baggage.
