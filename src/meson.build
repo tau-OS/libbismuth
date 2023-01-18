@@ -239,8 +239,6 @@ libbismuth_dep = declare_dependency(
   include_directories: include_directories('.'),
 )
 
-meson.override_dependency(package_api_name, libbismuth_dep)
-
 if introspection
    libbismuth_gir_extra_args = [
      '--c-include=bismuth.h',
