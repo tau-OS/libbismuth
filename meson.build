@@ -127,6 +127,9 @@ introspection = introspection_feature.enabled() or introspection_feature.auto()
 
 gnome = import('gnome')
 subdir('src')
+if get_option('documentation')
+  subdir('doc')
+endif
 summary(
   {
     'Introspection': introspection,

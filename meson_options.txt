@@ -1,3 +1,4 @@
+option('documentation', type: 'boolean', value: true)
 option('introspection', type: 'feature', value: 'auto')
 option('vapi', type: 'boolean', value: true)
 
