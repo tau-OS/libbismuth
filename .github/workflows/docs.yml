@@ -1,5 +1,4 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy documentation to Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -35,7 +34,7 @@ jobs:
       - name: Update repos
         run: sudo apt update
       - name: Install dependencies
-        run: sudo apt install libgtk-4-dev meson ninja-build
+        run: sudo apt install libgtk-4-dev meson ninja-build valac
       - name: Build libbmismuth
         run: meson setup builddir
       - name: Build with Ninja
