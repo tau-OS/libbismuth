@@ -544,6 +544,19 @@ bis_widget_get_request_mode (GtkWidget *widget)
         GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
 }
 
+void
+bis_widget_get_style_color (GtkWidget *widget,
+                            GdkRGBA   *rgba)
+{
+#if GTK_CHECK_VERSION (4, 9, 1)
+  gtk_widget_get_color (widget, rgba);
+#else
+  GtkStyleContext *context = gtk_widget_get_style_context (widget);
+
+  gtk_style_context_get_color (context, rgba);
+#endif
+}
+
 /* FIXME: Replace this with public color API and make public */
 gboolean
 bis_widget_lookup_color (GtkWidget  *widget,

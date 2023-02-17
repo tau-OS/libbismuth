@@ -84,7 +84,7 @@ snapshot_lines (GtkWidget      *widget,
   double indicator_length, full_size, line_size;
   double x = 0, y = 0, pos;
 
-  gtk_widget_get_color (widget, &color);
+  bis_widget_get_style_color (widget, &color);
   color.alpha *= LINE_OPACITY;
 
   line_size = LINE_LENGTH + LINE_SPACING;
