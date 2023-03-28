@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt install libgtk-4-dev meson ninja-build valac gi-docgen
       - name: Build libbmismuth
-        run: meson setup builddir
+        run: meson setup -Ddocumentation=true builddir
       - name: Build with Ninja
         run: ninja
         working-directory: ./builddir
